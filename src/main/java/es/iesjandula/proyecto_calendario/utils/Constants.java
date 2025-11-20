@@ -9,6 +9,7 @@ public class Constants
     public static final String ELEMENTO_AGREGADO = "Elemento agregado correctamente.";
     public static final String ELEMENTO_MODIFICADO = "Elemento modificado correctamente.";
     public static final String ELEMENTO_ELIMINADO = "Elemento eliminado correctamente.";
+    public static final String ELEMENTO_MOSTRADO = "Elemento mostrado correctamente.";
 
     // --- Errores de Usuario ---
     public static final String ERR_USUARIO_CODE = "USUARIO_ERROR";

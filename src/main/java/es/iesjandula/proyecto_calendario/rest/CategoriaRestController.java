@@ -27,91 +27,120 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 public class CategoriaRestController
 {
-    @Autowired
-    private ICategoriaRepository categoriaRepository;
+	@Autowired
+	private ICategoriaRepository categoriaRepository;
 
-    @PostMapping(value = "/", consumes = "application/json")
-    public ResponseEntity<?> crearCategoria(@RequestBody CategoriaRequestDto categoriaRequestDto)
-    {
-        try
-        {
-            if (categoriaRequestDto.getNombreCategoria() == null || categoriaRequestDto.getNombreCategoria().isEmpty())
-            {
-                log.error(Constants.ERR_CATEGORIA_NOMBRE_NULO_VACIO);
-                throw new CalendarioException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_NOMBRE_NULO_VACIO);
-            }
+	@PostMapping(value = "/", consumes = "application/json")
+	public ResponseEntity<?> crearCategoria(@RequestBody CategoriaRequestDto categoriaRequestDto)
+	{
+		try
+		{
+			if (categoriaRequestDto.getNombreCategoria() == null || categoriaRequestDto.getNombreCategoria().isEmpty())
+			{
+				log.error(Constants.ERR_CATEGORIA_NOMBRE_NULO_VACIO);
+				throw new CalendarioException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_NOMBRE_NULO_VACIO);
+			}
 
-            if (categoriaRepository.existsById(categoriaRequestDto.getNombreCategoria()))
-            {
-                log.error(Constants.ERR_CATEGORIA_EXISTE);
-                throw new CalendarioException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_EXISTE);
-            }
+			if (categoriaRepository.existsById(categoriaRequestDto.getNombreCategoria()))
+			{
+				log.error(Constants.ERR_CATEGORIA_EXISTE);
+				throw new CalendarioException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_EXISTE);
+			}
 
-            Categoria categoria = new Categoria();
-            categoria.setNombreCategoria(categoriaRequestDto.getNombreCategoria());
-            categoria.setColorCategoria(categoriaRequestDto.getColorCategoria());
+			Categoria categoria = new Categoria();
+			categoria.setNombreCategoria(categoriaRequestDto.getNombreCategoria());
+			categoria.setColorCategoria(categoriaRequestDto.getColorCategoria());
 
-            categoriaRepository.saveAndFlush(categoria);
-            log.info(Constants.ELEMENTO_AGREGADO);
-            return ResponseEntity.ok().body(Constants.ELEMENTO_AGREGADO);
-        }
-        catch (CalendarioException e)
-        {
-            return ResponseEntity.badRequest().body(e);
-        }
-    }
+			categoriaRepository.saveAndFlush(categoria);
+			log.info(Constants.ELEMENTO_AGREGADO);
+			return ResponseEntity.ok().body(Constants.ELEMENTO_AGREGADO);
+		} catch (CalendarioException e)
+		{
+			return ResponseEntity.badRequest().body(e);
+		}
+	}
 
-    @PutMapping(value = "/", consumes = "application/json")
-    public ResponseEntity<?> modificarCategoria(@RequestBody CategoriaRequestDto categoriaRequestDto)
-    {
-        try
-        {
-            Optional<Categoria> optionalCategoria = categoriaRepository.findById(categoriaRequestDto.getNombreCategoria());
-            if (!optionalCategoria.isPresent())
-            {
-                log.error(Constants.ERR_CATEGORIA_NO_EXISTE);
-                throw new CalendarioException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_NO_EXISTE);
-            }
+	@PutMapping(value = "/", consumes = "application/json")
+	public ResponseEntity<?> modificarCategoria(@RequestBody CategoriaRequestDto categoriaRequestDto)
+	{
+		try
+		{
+			Optional<Categoria> optionalCategoria = categoriaRepository
+					.findById(categoriaRequestDto.getNombreCategoria());
+			if (!optionalCategoria.isPresent())
+			{
+				log.error(Constants.ERR_CATEGORIA_NO_EXISTE);
+				throw new CalendarioException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_NO_EXISTE);
+			}
 
-            Categoria categoria = optionalCategoria.get();
-            categoria.setNombreCategoria(categoriaRequestDto.getNombreCategoria());
-            categoria.setColorCategoria(categoriaRequestDto.getColorCategoria());
+			Categoria categoria = optionalCategoria.get();
+			categoria.setNombreCategoria(categoriaRequestDto.getNombreCategoria());
+			categoria.setColorCategoria(categoriaRequestDto.getColorCategoria());
 
-            categoriaRepository.saveAndFlush(categoria);
-            log.info(Constants.ELEMENTO_MODIFICADO);
-            return ResponseEntity.ok().body(Constants.ELEMENTO_MODIFICADO);
-        }
-        catch (CalendarioException e)
-        {
-            return ResponseEntity.badRequest().body(e);
-        }
-    }
+			categoriaRepository.saveAndFlush(categoria);
+			log.info(Constants.ELEMENTO_MODIFICADO);
+			return ResponseEntity.ok().body(Constants.ELEMENTO_MODIFICADO);
+		} catch (CalendarioException e)
+		{
+			return ResponseEntity.badRequest().body(e);
+		}
+	}
 
-    @DeleteMapping(value="/{idCategoria}")
-    public ResponseEntity<?> eliminarCategoria(@PathVariable String idCategoria)
-    {
-        try
-        {
-            if (!categoriaRepository.existsById(idCategoria))
-            {
-                log.error(Constants.ERR_CATEGORIA_NO_EXISTE);
-                throw new CalendarioException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_NO_EXISTE);
-            }
+	@DeleteMapping(value = "/{idCategoria}")
+	public ResponseEntity<?> eliminarCategoria(@PathVariable String idCategoria)
+	{
+		try
+		{
+			if (!categoriaRepository.existsById(idCategoria))
+			{
+				log.error(Constants.ERR_CATEGORIA_NO_EXISTE);
+				throw new CalendarioException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_NO_EXISTE);
+			}
 
-            categoriaRepository.deleteById(idCategoria);
-            log.info(Constants.ELEMENTO_ELIMINADO);
-            return ResponseEntity.ok().body(Constants.ELEMENTO_ELIMINADO);
-        }
-        catch (CalendarioException e)
-        {
-            return ResponseEntity.badRequest().body(e);
-        }
-    }
+			categoriaRepository.deleteById(idCategoria);
+			log.info(Constants.ELEMENTO_ELIMINADO);
+			return ResponseEntity.ok().body(Constants.ELEMENTO_ELIMINADO);
+		} catch (CalendarioException e)
+		{
+			return ResponseEntity.badRequest().body(e);
+		}
+	}
 
-    @GetMapping(value="/")
-    public ResponseEntity<?> obtenerCategorias()
-    {
-    	List<CategoriaResponseDto> categorias = categoriaRepository.buscarCategorias();
-        return ResponseEntity.ok(categorias);
-    }
+	@GetMapping(value = "/")
+	public ResponseEntity<?> obtenerCategorias()
+	{
+		List<CategoriaResponseDto> categorias = categoriaRepository.buscarCategorias();
+		return ResponseEntity.ok(categorias);
+	}
+
+	@GetMapping(value = "/{nombre}")
+	public ResponseEntity<?> obtenerCategoria(@PathVariable String nombre)
+	{
+		try
+		{
+			if (nombre == null || nombre.trim().isEmpty())
+			{
+				log.error(Constants.ERR_CATEGORIA_NOMBRE_NULO_VACIO);
+				throw new CalendarioException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_NOMBRE_NULO_VACIO);
+			}
+
+			Optional<Categoria> categoriaOpt = categoriaRepository.findById(nombre.trim());
+			if (!categoriaOpt.isPresent())
+			{
+				log.error(Constants.ERR_CATEGORIA_NO_EXISTE);
+				throw new CalendarioException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_NO_EXISTE);
+			}
+
+			Categoria categoria = categoriaOpt.get();
+			CategoriaResponseDto dto = new CategoriaResponseDto(categoria.getNombreCategoria(),
+					categoria.getColorCategoria());
+
+			log.info(Constants.ELEMENTO_MOSTRADO);
+			return ResponseEntity.ok(dto);
+
+		} catch (CalendarioException e)
+		{
+			return ResponseEntity.badRequest().body(e);
+		}
+	}
 }
