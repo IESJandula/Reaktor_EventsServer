@@ -13,6 +13,7 @@ public class Constants
 
     // --- Errores de Usuario ---
     public static final String ERR_USUARIO_CODE = "USUARIO_ERROR";
+    public static final String ERR_USUARIO_CORREO_NULO_CODE = "6";
     public static final String ERR_USUARIO_CORREO_NULO_VACIO = "El correo del usuario no puede ser nulo ni vacío.";
     public static final String ERR_USUARIO_EXISTE = "El usuario ya existe en el sistema.";
     public static final String ERR_USUARIO_NO_EXISTE = "El usuario no existe en el sistema.";
@@ -36,4 +37,5 @@ public class Constants
     public static final String ERR_RECORDATORIO_EVENTO_NULO = "El recordatorio debe estar asociado a un evento.";
     public static final String ERR_RECORDATORIO_EXISTE = "El recordatorio ya existe en el sistema.";
     public static final String ERR_RECORDATORIO_NO_EXISTE = "El recordatorio no existe en el sistema.";
+	
 }
