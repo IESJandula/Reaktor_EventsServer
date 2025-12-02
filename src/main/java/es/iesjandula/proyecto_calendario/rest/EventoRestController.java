@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.support.ServletContextResourcePatternResolver;
 
 import es.iesjandula.proyecto_calendario.dto.EventoRequestDto;
 import es.iesjandula.proyecto_calendario.dto.EventoResponseDto;
@@ -223,32 +222,34 @@ public class EventoRestController
             	log.error(Constants.ERR_USUARIO_CORREO_NULO_VACIO);
             	throw new CalendarioException(Constants.ERR_USUARIO_CORREO_NULO_CODE, Constants.ERR_USUARIO_CORREO_NULO_VACIO);
             }
-            Usuario usuario = new Usuario();
-            usuario.setCorreoUsuario(correoUsuario.trim());
-            List<Evento> eventos = this.eventoRepository.buscarEventosPorUsuario(correoUsuario);
             
-            if (eventos == null || eventos.isEmpty())
+            Optional<Usuario> usuarioOpt = this.usuarioRepository.findById(correoUsuario);
+            if (!usuarioOpt.isPresent())
+            {
+                log.error(Constants.ERR_USUARIO_NO_EXISTE);
+                throw new CalendarioException(Constants.ERR_USUARIO_NO_EXISTE_CODE, Constants.ERR_USUARIO_NO_EXISTE);
+            }
+           
+            List<EventoResponseDto> eventosDto = this.eventoRepository.buscarEventosPorUsuario(correoUsuario);
+            
+            if (eventosDto == null || eventosDto.isEmpty())
             {
                 log.error(Constants.ERR_EVENTO_NO_EXISTE);
                 throw new CalendarioException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_NO_EXISTE);
             }
 
-            List<EventoResponseDto> eventosDto = eventos.stream().map(evento -> {
-                EventoResponseDto dto = new EventoResponseDto();
-                dto.setTitulo(evento.getId().getTitulo());
-                dto.setFechaInicio(evento.getId().getFechaInicio());
-                dto.setFechaFin(evento.getId().getFechaFin());
-                return dto;
-            }).toList();
-
             return ResponseEntity.ok(eventosDto);
         }
-        catch (CalendarioException e)
+        catch (CalendarioException exception)
         {
-            return ResponseEntity.badRequest().body(e);
+            return ResponseEntity.badRequest().body(exception);
         }
-
-    
+    	 catch (Exception exception)
+        {
+    		CalendarioException calendarioException= new CalendarioException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
+            return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage());
+    		
+        }
     
     }
 }
