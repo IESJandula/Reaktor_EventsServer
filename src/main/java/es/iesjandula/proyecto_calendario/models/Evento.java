@@ -22,12 +22,12 @@ public class Evento
 {
 	@EmbeddedId
     private EventoId id;
-
+	
 	@ManyToOne
-    @JoinColumn(name = "usuario_correo", nullable = false)
+    @JoinColumn(name = "email", nullable = false)
     private Usuario usuario;
 
     @ManyToOne
-    @JoinColumn(name = "categoria_nombre")
+    @JoinColumn(name = "nombre")
     private Categoria categoria;
 }

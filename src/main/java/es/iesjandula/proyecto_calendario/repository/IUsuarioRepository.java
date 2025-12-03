@@ -10,7 +10,7 @@ import es.iesjandula.proyecto_calendario.models.Usuario;
 
 public interface IUsuarioRepository extends JpaRepository<Usuario, String>
 {
-	@Query("SELECT new es.iesjandula.proyecto_calendario.dto.UsuarioResponseDto(u.correoUsuario, u.nombreUsuario) " +
+	@Query("SELECT new es.iesjandula.proyecto_calendario.dto.UsuarioResponseDto(u.email, u.nombre) " +
 		       "FROM Usuario u")
 	List<UsuarioResponseDto> buscarUsuarios();
 }

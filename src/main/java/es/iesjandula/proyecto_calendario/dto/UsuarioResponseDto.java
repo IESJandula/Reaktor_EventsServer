@@ -10,6 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UsuarioResponseDto {
-    private String correoUsuario;
-    private String nombreUsuario;
+	
+    private String email;
+    private String nombre;
 }

@@ -11,6 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CategoriaRequestDto
 {
-	  private String nombreCategoria;
-	  private String colorCategoria;
+	  private String nombre;
+	  private String color;
 }

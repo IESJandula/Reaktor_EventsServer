@@ -10,7 +10,7 @@ import es.iesjandula.proyecto_calendario.models.Categoria;
 
 public interface ICategoriaRepository extends JpaRepository<Categoria, String>
 {
-	@Query("SELECT new es.iesjandula.proyecto_calendario.dto.CategoriaResponseDto(c.nombreCategoria, c.colorCategoria) " +
+	@Query("SELECT new es.iesjandula.proyecto_calendario.dto.CategoriaResponseDto(c.nombre, c.color) " +
 		       "FROM Categoria c")
 	List<CategoriaResponseDto> buscarCategorias();
 }

@@ -33,19 +33,19 @@ public class UsuarioRestController
     @PostMapping(value = "/", consumes = "application/json")
     public ResponseEntity<?> crearUsuario(@RequestBody UsuarioRequestDto usuarioRequestDto) {
         try {
-            if (usuarioRequestDto.getCorreo() == null || usuarioRequestDto.getCorreo().isEmpty()) {
+            if (usuarioRequestDto.getEmail() == null || usuarioRequestDto.getEmail().isEmpty()) {
                 log.error(Constants.ERR_USUARIO_CORREO_NULO_VACIO);
                 throw new CalendarioException(Constants.ERR_USUARIO_CODE, Constants.ERR_USUARIO_CORREO_NULO_VACIO);
             }
 
-            if (usuarioRepository.existsById(usuarioRequestDto.getCorreo())) {
+            if (usuarioRepository.existsById(usuarioRequestDto.getEmail())) {
                 log.error(Constants.ERR_USUARIO_EXISTE);
                 throw new CalendarioException(Constants.ERR_USUARIO_CODE, Constants.ERR_USUARIO_EXISTE);
             }
 
             Usuario usuario = new Usuario();
-            usuario.setNombreUsuario(usuarioRequestDto.getNombre());
-            usuario.setCorreoUsuario(usuarioRequestDto.getCorreo());
+            usuario.setNombre(usuarioRequestDto.getNombre());
+            usuario.setEmail(usuarioRequestDto.getEmail());
 
             usuarioRepository.saveAndFlush(usuario);
             log.info(Constants.ELEMENTO_AGREGADO);
@@ -60,13 +60,13 @@ public class UsuarioRestController
     {
         try
         {
-            if (usuarioRequestDto.getCorreo() == null || usuarioRequestDto.getCorreo().isEmpty())
+            if (usuarioRequestDto.getEmail() == null || usuarioRequestDto.getEmail().isEmpty())
             {
                 log.error(Constants.ERR_USUARIO_CORREO_NULO_VACIO);
                 throw new CalendarioException(Constants.ERR_USUARIO_CODE, Constants.ERR_USUARIO_CORREO_NULO_VACIO);
             }
 
-            Optional<Usuario> optionalUsuario = usuarioRepository.findById(usuarioRequestDto.getCorreo());
+            Optional<Usuario> optionalUsuario = usuarioRepository.findById(usuarioRequestDto.getEmail());
             if (!optionalUsuario.isPresent())
             {
                 log.error(Constants.ERR_USUARIO_NO_EXISTE);
@@ -74,7 +74,8 @@ public class UsuarioRestController
             }
 
             Usuario usuario = optionalUsuario.get();
-            usuario.setNombreUsuario(usuarioRequestDto.getNombre());
+            usuario.setEmail(usuarioRequestDto.getEmail());
+            usuario.setNombre(usuarioRequestDto.getNombre());
 
             usuarioRepository.saveAndFlush(usuario);
             log.info(Constants.ELEMENTO_MODIFICADO);
@@ -82,7 +83,7 @@ public class UsuarioRestController
         }
         catch (CalendarioException e)
         {
-            return ResponseEntity.badRequest().body(e);
+            return ResponseEntity.badRequest().body(e.getBodyExceptionMessage());
         }
     }
     @DeleteMapping(value="/{id}")

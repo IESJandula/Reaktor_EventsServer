@@ -35,21 +35,21 @@ public class CategoriaRestController
 	{
 		try
 		{
-			if (categoriaRequestDto.getNombreCategoria() == null || categoriaRequestDto.getNombreCategoria().isEmpty())
+			if (categoriaRequestDto.getNombre() == null || categoriaRequestDto.getNombre().isEmpty())
 			{
 				log.error(Constants.ERR_CATEGORIA_NOMBRE_NULO_VACIO);
 				throw new CalendarioException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_NOMBRE_NULO_VACIO);
 			}
 
-			if (categoriaRepository.existsById(categoriaRequestDto.getNombreCategoria()))
+			if (categoriaRepository.existsById(categoriaRequestDto.getNombre()))
 			{
 				log.error(Constants.ERR_CATEGORIA_EXISTE);
 				throw new CalendarioException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_EXISTE);
 			}
 
 			Categoria categoria = new Categoria();
-			categoria.setNombreCategoria(categoriaRequestDto.getNombreCategoria());
-			categoria.setColorCategoria(categoriaRequestDto.getColorCategoria());
+			categoria.setNombre(categoriaRequestDto.getNombre());
+			categoria.setColor(categoriaRequestDto.getColor());
 
 			categoriaRepository.saveAndFlush(categoria);
 			log.info(Constants.ELEMENTO_AGREGADO);
@@ -66,7 +66,7 @@ public class CategoriaRestController
 		try
 		{
 			Optional<Categoria> optionalCategoria = categoriaRepository
-					.findById(categoriaRequestDto.getNombreCategoria());
+					.findById(categoriaRequestDto.getNombre());
 			if (!optionalCategoria.isPresent())
 			{
 				log.error(Constants.ERR_CATEGORIA_NO_EXISTE);
@@ -74,8 +74,8 @@ public class CategoriaRestController
 			}
 
 			Categoria categoria = optionalCategoria.get();
-			categoria.setNombreCategoria(categoriaRequestDto.getNombreCategoria());
-			categoria.setColorCategoria(categoriaRequestDto.getColorCategoria());
+			categoria.setNombre(categoriaRequestDto.getNombre());
+			categoria.setColor(categoriaRequestDto.getColor());
 
 			categoriaRepository.saveAndFlush(categoria);
 			log.info(Constants.ELEMENTO_MODIFICADO);
@@ -132,8 +132,8 @@ public class CategoriaRestController
 			}
 
 			Categoria categoria = categoriaOpt.get();
-			CategoriaResponseDto dto = new CategoriaResponseDto(categoria.getNombreCategoria(),
-					categoria.getColorCategoria());
+			CategoriaResponseDto dto = new CategoriaResponseDto(categoria.getNombre(),
+					categoria.getColor());
 
 			log.info(Constants.ELEMENTO_MOSTRADO);
 			return ResponseEntity.ok(dto);

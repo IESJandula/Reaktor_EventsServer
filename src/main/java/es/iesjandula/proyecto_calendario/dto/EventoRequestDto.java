@@ -16,6 +16,6 @@ public class EventoRequestDto
     private String titulo;
     private Date fechaInicio;
     private Date fechaFin;
-    private String correoUsuario;
-    private String nombreCategoria;
+    private String email;
+    private String nombre;
 }

@@ -11,6 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UsuarioRequestDto
 {
+	private String email;
     private String nombre;
-    private String correo;
+    
 }

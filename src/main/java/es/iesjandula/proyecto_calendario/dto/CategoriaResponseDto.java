@@ -10,6 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoriaResponseDto {
-    private String nombreCategoria;
-    private String colorCategoria;
+    private String nombre;
+    private String color;
 }

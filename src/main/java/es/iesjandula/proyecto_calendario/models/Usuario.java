@@ -23,10 +23,10 @@ public class Usuario
 {
 	@Id
 	@Column(length = 150)
-	private String correoUsuario;
+	private String email;
 
 	@Column(length = 100, nullable = false)
-    private String nombreUsuario;
+    private String nombre;
 
     @OneToMany(mappedBy = "usuario")
     private List<Evento> eventos ;

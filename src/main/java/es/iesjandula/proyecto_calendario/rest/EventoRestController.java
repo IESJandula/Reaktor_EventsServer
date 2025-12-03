@@ -60,7 +60,7 @@ public class EventoRestController
                 log.error(Constants.ERR_EVENTO_EXISTE);
                 throw new CalendarioException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_EXISTE);
             }
-            Optional<Usuario> usuarioOpt = this.usuarioRepository.findById(eventoRequestDto.getCorreoUsuario());
+            Optional<Usuario> usuarioOpt = this.usuarioRepository.findById(eventoRequestDto.getEmail());
             if (!usuarioOpt.isPresent())
             {
                 log.error(Constants.ERR_USUARIO_NO_EXISTE);
@@ -68,7 +68,7 @@ public class EventoRestController
             }
             Usuario usuario = usuarioOpt.get();
             
-            Optional<Categoria> categoriaOpt = this.categoriaRepository.findById(eventoRequestDto.getNombreCategoria());
+            Optional<Categoria> categoriaOpt = this.categoriaRepository.findById(eventoRequestDto.getNombre());
             if (!categoriaOpt.isPresent())
             {
                 log.error(Constants.ERR_CATEGORIA_NO_EXISTE);
@@ -119,7 +119,7 @@ public class EventoRestController
                throw new CalendarioException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS);
            }
 
-           Optional<Usuario> usuarioOpt = usuarioRepository.findById(eventoRequestDto.getCorreoUsuario());
+           Optional<Usuario> usuarioOpt = usuarioRepository.findById(eventoRequestDto.getEmail());
            if (!usuarioOpt.isPresent())
            {
                log.error(Constants.ERR_USUARIO_NO_EXISTE);
@@ -129,9 +129,9 @@ public class EventoRestController
            Optional<Categoria> categoriaOpt = null;
            
            Categoria categoria = null;
-           if (eventoRequestDto.getNombreCategoria() != null)
+           if (eventoRequestDto.getNombre() != null)
            {
-               categoriaOpt = categoriaRepository.findById(eventoRequestDto.getNombreCategoria());
+               categoriaOpt = categoriaRepository.findById(eventoRequestDto.getNombre());
                if (!categoriaOpt.isPresent())
                {
                    log.error(Constants.ERR_CATEGORIA_NO_EXISTE);
