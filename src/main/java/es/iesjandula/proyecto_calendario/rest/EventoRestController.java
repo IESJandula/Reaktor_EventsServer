@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -47,13 +48,29 @@ public class EventoRestController
     {
         try
         {
+        	Date fechaIncioDate = new Date(eventoRequestDto.getFechaInicio()) ;
+        	if(eventoRequestDto.getFechaInicio() == null || eventoRequestDto.getFechaInicio() > 0 ) 
+        	{
+        		log.error(Constants.ERR_EVENTO_FECHAS_INVALIDAS);
+                throw new CalendarioException(Constants.ERR_EVENTO_FECHAS_INVALIDAS_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS);        	
+        	}
+      
+            Date fechaFinDate = new Date(eventoRequestDto.getFechaFin()) ;
+            if(eventoRequestDto.getFechaFin() == null || eventoRequestDto.getFechaFin() > 0 ) 
+        	{
+        		log.error(Constants.ERR_EVENTO_FECHAS_INVALIDAS);
+                throw new CalendarioException(Constants.ERR_EVENTO_FECHAS_INVALIDAS_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS);        	
+        	}
+            
             if (eventoRequestDto.getTitulo() == null || eventoRequestDto.getTitulo().isEmpty())
             {
                 log.error(Constants.ERR_EVENTO_TITULO_NULO_VACIO);
                 throw new CalendarioException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_TITULO_NULO_VACIO);
             }
             
-            EventoId eventoId = new EventoId(eventoRequestDto.getTitulo(), eventoRequestDto.getFechaInicio(),eventoRequestDto.getFechaFin());
+            
+            
+            EventoId eventoId = new EventoId(eventoRequestDto.getTitulo(), fechaIncioDate,fechaFinDate);
 
             if (eventoRepository.existsById(eventoId))
             {
@@ -94,15 +111,30 @@ public class EventoRestController
    @PutMapping(value = "/", consumes = "application/json")
    public ResponseEntity<?> modificarEvento(@RequestBody EventoRequestDto eventoRequestDto)
    {
+	   
        try
        {
+    	   
+    	   Date fechaInicioDate = new Date(eventoRequestDto.getFechaInicio()) ;
+    	   if(eventoRequestDto.getFechaInicio() == null || eventoRequestDto.getFechaInicio() > 0 )
+    	   {
+       		log.error(Constants.ERR_EVENTO_FECHAS_INVALIDAS);
+               throw new CalendarioException(Constants.ERR_EVENTO_FECHAS_INVALIDAS_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS);
+           }
+           Date fechaFinDate = new Date(eventoRequestDto.getFechaInicio()) ;
+           if(eventoRequestDto.getFechaFin() == null || eventoRequestDto.getFechaFin() > 0 )
+           {
+       		log.error(Constants.ERR_EVENTO_FECHAS_INVALIDAS);
+               throw new CalendarioException(Constants.ERR_EVENTO_FECHAS_INVALIDAS_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS);
+           }
+           
            if (eventoRequestDto.getTitulo() == null || eventoRequestDto.getTitulo().isEmpty())
            {
                log.error(Constants.ERR_EVENTO_TITULO_NULO_VACIO);
                throw new CalendarioException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_TITULO_NULO_VACIO);
            }
-           
-           EventoId eventoId = new EventoId(eventoRequestDto.getTitulo(), eventoRequestDto.getFechaInicio(),eventoRequestDto.getFechaFin());
+          
+           EventoId eventoId = new EventoId(eventoRequestDto.getTitulo(), fechaInicioDate,fechaFinDate);
 
            Optional<Evento> eventoOpt = eventoRepository.findById(eventoId);
            if (!eventoOpt.isPresent())
@@ -113,7 +145,7 @@ public class EventoRestController
 
            Evento evento = eventoOpt.get();
 
-           if (eventoRequestDto.getFechaFin().before(eventoRequestDto.getFechaInicio()))
+           if (fechaInicioDate.before(fechaFinDate))
            {
                log.error(Constants.ERR_EVENTO_FECHAS_INVALIDAS);
                throw new CalendarioException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS);
@@ -184,12 +216,27 @@ public class EventoRestController
     /**
      * endpoint para obtener un evento a traves de su id
      */
-    @GetMapping("/{titulo}/{fechaInicio}/{fechaFin}")
-    public ResponseEntity<?> obtenerEventoPorId(@PathVariable String titulo,Date fechaInicio,Date fechaFin)
+    @GetMapping("/filtro")
+    public ResponseEntity<?> obtenerEventoPorId(@RequestHeader String titulo,@RequestHeader Long fechaInicio,@RequestHeader Long fechaFin)
     {
+    	
 
         try
         {
+          	Date fechaInicioDate = new Date(EventoResponseDto.getFechaInicio()) ;
+            if(EventoResponseDto.getFechaInicio() == null || EventoResponseDto.getFechaInicio() > 0 ) 
+        	{
+        		log.error(Constants.ERR_EVENTO_FECHAS_INVALIDAS);
+                throw new CalendarioException(Constants.ERR_EVENTO_FECHAS_INVALIDAS_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS);        	
+        	}
+        	
+            Date fechaFinDate = new Date(EventoResponseDto.getFechaInicio()) ;
+            if(EventoResponseDto.getFechaFin() == null || EventoResponseDto.getFechaFin() > 0 ) 
+        	{
+        		log.error(Constants.ERR_EVENTO_FECHAS_INVALIDAS);
+                throw new CalendarioException(Constants.ERR_EVENTO_FECHAS_INVALIDAS_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS);        	
+        	}
+             
             EventoId eventoId = new EventoId(titulo, fechaInicio, fechaFin);
             Optional<Evento> eventoOpt = this.eventoRepository.findById(eventoId);
 
@@ -198,6 +245,7 @@ public class EventoRestController
                 log.error(Constants.ERR_EVENTO_NO_EXISTE);
                 throw new CalendarioException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_NO_EXISTE);
             }
+       	 
 
             Evento evento = eventoOpt.get();            
             EventoResponseDto eventoResponseDto = new EventoResponseDto();
