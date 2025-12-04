@@ -1,5 +1,7 @@
 package es.iesjandula.proyecto_calendario.dto;
 
+import java.util.Date;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,8 +14,8 @@ import lombok.Setter;
 public class EventoResponseDto
 {
 	private String titulo;
-    private Long fechaInicio;
-    private Long fechaFin;
+    private Date fechaInicio;
+    private Date fechaFin;
     private String email;
     private String nombre;
 }

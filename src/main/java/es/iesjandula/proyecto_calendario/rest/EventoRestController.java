@@ -48,29 +48,17 @@ public class EventoRestController
     {
         try
         {
-        	Date fechaIncioDate = new Date(eventoRequestDto.getFechaInicio()) ;
-        	if(eventoRequestDto.getFechaInicio() == null || eventoRequestDto.getFechaInicio() > 0 ) 
-        	{
-        		log.error(Constants.ERR_EVENTO_FECHAS_INVALIDAS);
-                throw new CalendarioException(Constants.ERR_EVENTO_FECHAS_INVALIDAS_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS);        	
-        	}
-      
-            Date fechaFinDate = new Date(eventoRequestDto.getFechaFin()) ;
-            if(eventoRequestDto.getFechaFin() == null || eventoRequestDto.getFechaFin() > 0 ) 
-        	{
-        		log.error(Constants.ERR_EVENTO_FECHAS_INVALIDAS);
-                throw new CalendarioException(Constants.ERR_EVENTO_FECHAS_INVALIDAS_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS);        	
-        	}
-            
+ 
             if (eventoRequestDto.getTitulo() == null || eventoRequestDto.getTitulo().isEmpty())
             {
                 log.error(Constants.ERR_EVENTO_TITULO_NULO_VACIO);
                 throw new CalendarioException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_TITULO_NULO_VACIO);
             }
             
+        	Date fechaInicio = toDate(eventoRequestDto.getFechaInicio());
+            Date fechaFin = toDate(eventoRequestDto.getFechaFin()) ;
             
-            
-            EventoId eventoId = new EventoId(eventoRequestDto.getTitulo(), fechaIncioDate,fechaFinDate);
+            EventoId eventoId = new EventoId(eventoRequestDto.getTitulo(), fechaInicio,fechaFin);
 
             if (eventoRepository.existsById(eventoId))
             {
@@ -94,7 +82,7 @@ public class EventoRestController
             Categoria categoria = categoriaOpt.get();
 
             Evento evento = new Evento();
-            evento.setId(eventoId);
+            evento.setEventoId(eventoId);
             evento.setUsuario(usuarioOpt.get());
             evento.setCategoria(categoriaOpt.get());
 
@@ -102,9 +90,15 @@ public class EventoRestController
             log.info(Constants.ELEMENTO_AGREGADO);
             return ResponseEntity.ok().body(Constants.ELEMENTO_AGREGADO);
         }
-        catch (CalendarioException e)
+        catch (CalendarioException exception)
         {
-            return ResponseEntity.badRequest().body(e);
+            return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage());
+        }
+   	 	catch (Exception exception)
+        {
+    		CalendarioException calendarioException= new CalendarioException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
+            return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage());
+    		
         }
     }
 
@@ -114,27 +108,16 @@ public class EventoRestController
 	   
        try
        {
-    	   
-    	   Date fechaInicioDate = new Date(eventoRequestDto.getFechaInicio()) ;
-    	   if(eventoRequestDto.getFechaInicio() == null || eventoRequestDto.getFechaInicio() > 0 )
-    	   {
-       		log.error(Constants.ERR_EVENTO_FECHAS_INVALIDAS);
-               throw new CalendarioException(Constants.ERR_EVENTO_FECHAS_INVALIDAS_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS);
-           }
-           Date fechaFinDate = new Date(eventoRequestDto.getFechaInicio()) ;
-           if(eventoRequestDto.getFechaFin() == null || eventoRequestDto.getFechaFin() > 0 )
-           {
-       		log.error(Constants.ERR_EVENTO_FECHAS_INVALIDAS);
-               throw new CalendarioException(Constants.ERR_EVENTO_FECHAS_INVALIDAS_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS);
-           }
-           
+    	       
            if (eventoRequestDto.getTitulo() == null || eventoRequestDto.getTitulo().isEmpty())
            {
                log.error(Constants.ERR_EVENTO_TITULO_NULO_VACIO);
                throw new CalendarioException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_TITULO_NULO_VACIO);
            }
-          
-           EventoId eventoId = new EventoId(eventoRequestDto.getTitulo(), fechaInicioDate,fechaFinDate);
+           Date fechaInicio = toDate(eventoRequestDto.getFechaInicio());
+           Date fechaFin = toDate(eventoRequestDto.getFechaFin()) ;
+           
+           EventoId eventoId = new EventoId(eventoRequestDto.getTitulo(), fechaInicio,fechaFin);
 
            Optional<Evento> eventoOpt = eventoRepository.findById(eventoId);
            if (!eventoOpt.isPresent())
@@ -145,7 +128,7 @@ public class EventoRestController
 
            Evento evento = eventoOpt.get();
 
-           if (fechaInicioDate.before(fechaFinDate))
+           if (!fechaInicio.before(fechaFin))
            {
                log.error(Constants.ERR_EVENTO_FECHAS_INVALIDAS);
                throw new CalendarioException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS);
@@ -172,7 +155,7 @@ public class EventoRestController
                categoria = categoriaOpt.get();
            }
 
-           evento.setId(eventoId);
+           evento.setEventoId(eventoId);
            evento.setUsuario(usuarioOpt.get());
            evento.setCategoria(categoriaOpt.get());
 
@@ -180,30 +163,47 @@ public class EventoRestController
            log.info(Constants.ELEMENTO_MODIFICADO);
            return ResponseEntity.ok().body(Constants.ELEMENTO_MODIFICADO);
        }
-       catch (CalendarioException e)
+       catch (CalendarioException exception)
        {
-           return ResponseEntity.badRequest().body(e);
+           return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage());
+       }
+  	 	catch (Exception exception)
+       {
+   		CalendarioException calendarioException= new CalendarioException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
+           return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage());
+   		
        }
    }
 
-    @DeleteMapping(value="/{idEvento}")
-    public ResponseEntity<?> eliminarEvento(@PathVariable EventoId id)
+    @DeleteMapping(value="/")
+    public ResponseEntity<?> eliminarEvento(@RequestHeader String titulo,@RequestHeader Long fechaInicio,@RequestHeader Long fechaFin)
     {
         try
         {
-            if (!eventoRepository.existsById(id))
+        	Date fechInicio = toDate(fechaInicio);
+            Date fechFin = toDate(fechaFin) ;
+            
+            EventoId eventoId = new EventoId(titulo,fechInicio,fechFin);
+            
+            if (!eventoRepository.existsById(eventoId))
             {
                 log.error(Constants.ERR_EVENTO_NO_EXISTE);
                 throw new CalendarioException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_NO_EXISTE);
             }
 
-            eventoRepository.deleteById(id);
+            eventoRepository.deleteById(eventoId);
             log.info(Constants.ELEMENTO_ELIMINADO);
             return ResponseEntity.ok().body(Constants.ELEMENTO_ELIMINADO);
         }
-        catch (CalendarioException e)
+        catch (CalendarioException exception)
         {
-            return ResponseEntity.badRequest().body(e);
+            return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage());
+        }
+   	 	catch (Exception exception)
+        {
+    		CalendarioException calendarioException= new CalendarioException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
+            return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage());
+    		
         }
     }
 
@@ -220,24 +220,12 @@ public class EventoRestController
     public ResponseEntity<?> obtenerEventoPorId(@RequestHeader String titulo,@RequestHeader Long fechaInicio,@RequestHeader Long fechaFin)
     {
     	
-
         try
         {
-          	Date fechaInicioDate = new Date(EventoResponseDto.getFechaInicio()) ;
-            if(EventoResponseDto.getFechaInicio() == null || EventoResponseDto.getFechaInicio() > 0 ) 
-        	{
-        		log.error(Constants.ERR_EVENTO_FECHAS_INVALIDAS);
-                throw new CalendarioException(Constants.ERR_EVENTO_FECHAS_INVALIDAS_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS);        	
-        	}
-        	
-            Date fechaFinDate = new Date(EventoResponseDto.getFechaInicio()) ;
-            if(EventoResponseDto.getFechaFin() == null || EventoResponseDto.getFechaFin() > 0 ) 
-        	{
-        		log.error(Constants.ERR_EVENTO_FECHAS_INVALIDAS);
-                throw new CalendarioException(Constants.ERR_EVENTO_FECHAS_INVALIDAS_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS);        	
-        	}
-             
-            EventoId eventoId = new EventoId(titulo, fechaInicio, fechaFin);
+        	Date fechInicio = toDate(fechaInicio);
+            Date fechFin = toDate(fechaFin) ;
+            
+            EventoId eventoId = new EventoId(titulo,fechInicio,fechFin);
             Optional<Evento> eventoOpt = this.eventoRepository.findById(eventoId);
 
             if (!eventoOpt.isPresent())
@@ -247,16 +235,23 @@ public class EventoRestController
             }
        	 
 
-            Evento evento = eventoOpt.get();            
+            Evento evento = eventoOpt.get(); 
+            
             EventoResponseDto eventoResponseDto = new EventoResponseDto();
-            eventoResponseDto.setTitulo(evento.getId().getTitulo());
-            eventoResponseDto.setFechaInicio(evento.getId().getFechaInicio());
-            eventoResponseDto.setFechaFin(evento.getId().getFechaFin());
+            eventoResponseDto.setTitulo(evento.getEventoId().getTitulo());
+            eventoResponseDto.setFechaInicio(evento.getEventoId().getFechaInicio());
+            eventoResponseDto.setFechaFin(evento.getEventoId().getFechaFin());
             return ResponseEntity.ok(eventoResponseDto);
 
-        } catch (CalendarioException e) {
+        } catch (CalendarioException exception) {
             
-        	return ResponseEntity.badRequest().body(e);
+        	return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage());
+        }
+   	 	catch (Exception exception)
+        {
+    		CalendarioException calendarioException= new CalendarioException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
+            return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage());
+    		
         }
     }
     
@@ -290,7 +285,7 @@ public class EventoRestController
         }
         catch (CalendarioException exception)
         {
-            return ResponseEntity.badRequest().body(exception);
+            return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage());
         }
     	 catch (Exception exception)
         {
@@ -299,6 +294,16 @@ public class EventoRestController
     		
         }
     
+    }
+    
+    private Date toDate(Long fecha) throws CalendarioException
+    {
+    	if(fecha == null || fecha <= 0)
+    	{
+    		log.error(Constants.ERR_EVENTO_FECHAS_INVALIDAS);
+            throw new CalendarioException(Constants.ERR_EVENTO_FECHAS_INVALIDAS_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS);
+    	}
+    	return new Date(fecha);
     }
 }
 

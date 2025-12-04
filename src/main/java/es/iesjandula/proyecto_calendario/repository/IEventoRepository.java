@@ -13,14 +13,14 @@ import es.iesjandula.proyecto_calendario.models.ids.EventoId;
 public interface IEventoRepository extends JpaRepository<Evento, EventoId>
 {
 	@Query("SELECT new es.iesjandula.proyecto_calendario.dto.EventoResponseDto(" +
-	           "e.id.titulo, e.id.fechaInicio, e.id.fechaFin, " +
+	           "e.eventoId.titulo, e.eventoId.fechaInicio, e.eventoId.fechaFin, " +
 	           "e.usuario.email, " +
 	           "e.categoria.nombre) " +
 	           "FROM Evento e")
 	List<EventoResponseDto> buscarEventos();
 	
 	@Query("SELECT new es.iesjandula.proyecto_calendario.dto.EventoResponseDto(" +
-	           "e.id.titulo, e.id.fechaInicio, e.id.fechaFin, " +
+	           "e.eventoId.titulo, e.eventoId.fechaInicio, e.eventoId.fechaFin, " +
 	           "e.usuario.email, e.categoria.nombre) " +
 	           "FROM Evento e " +
 		       "JOIN e.usuario u " +

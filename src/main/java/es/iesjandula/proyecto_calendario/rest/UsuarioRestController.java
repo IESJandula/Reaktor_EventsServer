@@ -50,8 +50,16 @@ public class UsuarioRestController
             usuarioRepository.saveAndFlush(usuario);
             log.info(Constants.ELEMENTO_AGREGADO);
             return ResponseEntity.ok().build();
-        } catch (CalendarioException e) {
-            return ResponseEntity.badRequest().body(e);
+        } 
+        catch (CalendarioException exception) 
+        {
+            return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage());
+        }
+   	 	catch (Exception exception)
+        {
+    		CalendarioException calendarioException= new CalendarioException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
+            return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage());
+    		
         }
     }
 
@@ -81,9 +89,15 @@ public class UsuarioRestController
             log.info(Constants.ELEMENTO_MODIFICADO);
             return ResponseEntity.ok().build();
         }
-        catch (CalendarioException e)
+        catch (CalendarioException exception)
         {
-            return ResponseEntity.badRequest().body(e.getBodyExceptionMessage());
+            return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage());
+        }
+   	 	catch (Exception exception)
+        {
+    		CalendarioException calendarioException= new CalendarioException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
+            return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage());
+    		
         }
     }
     @DeleteMapping(value="/{id}")
@@ -101,9 +115,15 @@ public class UsuarioRestController
             log.info(Constants.ELEMENTO_ELIMINADO);
             return ResponseEntity.ok().build();
         }
-        catch (CalendarioException e)
+        catch (CalendarioException exception)
         {
-            return ResponseEntity.badRequest().body(e);
+            return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage());
+        }
+   	 	catch (Exception exception)
+        {
+    		CalendarioException calendarioException= new CalendarioException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
+            return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage());
+    		
         }
     }
 

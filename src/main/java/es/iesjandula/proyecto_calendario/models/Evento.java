@@ -21,7 +21,7 @@ import lombok.Setter;
 public class Evento
 {
 	@EmbeddedId
-    private EventoId id;
+    private EventoId eventoId;
 	
 	@ManyToOne
     @JoinColumn(name = "email", nullable = false)

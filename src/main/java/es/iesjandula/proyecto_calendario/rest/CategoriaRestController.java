@@ -54,10 +54,17 @@ public class CategoriaRestController
 			categoriaRepository.saveAndFlush(categoria);
 			log.info(Constants.ELEMENTO_AGREGADO);
 			return ResponseEntity.ok().body(Constants.ELEMENTO_AGREGADO);
-		} catch (CalendarioException e)
+		} 
+		catch (CalendarioException exception)
 		{
-			return ResponseEntity.badRequest().body(e);
+			return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage());
 		}
+   	 	catch (Exception exception)
+        {
+    		CalendarioException calendarioException= new CalendarioException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
+            return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage());
+    		
+        }
 	}
 
 	@PutMapping(value = "/", consumes = "application/json")
@@ -80,30 +87,44 @@ public class CategoriaRestController
 			categoriaRepository.saveAndFlush(categoria);
 			log.info(Constants.ELEMENTO_MODIFICADO);
 			return ResponseEntity.ok().body(Constants.ELEMENTO_MODIFICADO);
-		} catch (CalendarioException e)
+		} 
+		catch (CalendarioException exception)
 		{
-			return ResponseEntity.badRequest().body(e);
+			return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage());
 		}
+   	 	catch (Exception exception)
+        {
+    		CalendarioException calendarioException= new CalendarioException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
+            return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage());
+    		
+        }
 	}
 
-	@DeleteMapping(value = "/{idCategoria}")
-	public ResponseEntity<?> eliminarCategoria(@PathVariable String idCategoria)
+	@DeleteMapping(value = "/{nombre}")
+	public ResponseEntity<?> eliminarCategoria(@PathVariable String nombre)
 	{
 		try
 		{
-			if (!categoriaRepository.existsById(idCategoria))
+			if (!categoriaRepository.existsById(nombre))
 			{
 				log.error(Constants.ERR_CATEGORIA_NO_EXISTE);
 				throw new CalendarioException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_NO_EXISTE);
 			}
 
-			categoriaRepository.deleteById(idCategoria);
+			categoriaRepository.deleteById(nombre);
 			log.info(Constants.ELEMENTO_ELIMINADO);
 			return ResponseEntity.ok().body(Constants.ELEMENTO_ELIMINADO);
-		} catch (CalendarioException e)
+		} 
+		catch (CalendarioException exception)
 		{
-			return ResponseEntity.badRequest().body(e);
+			return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage());
 		}
+   	 	catch (Exception exception)
+        {
+    		CalendarioException calendarioException= new CalendarioException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
+            return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage());
+    		
+        }
 	}
 
 	@GetMapping(value = "/")
@@ -138,9 +159,16 @@ public class CategoriaRestController
 			log.info(Constants.ELEMENTO_MOSTRADO);
 			return ResponseEntity.ok(dto);
 
-		} catch (CalendarioException e)
+		} 
+		catch (CalendarioException exception)
 		{
-			return ResponseEntity.badRequest().body(e);
+			return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage());
 		}
+   	 	catch (Exception exception)
+        {
+    		CalendarioException calendarioException= new CalendarioException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
+            return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage());
+    		
+        }
 	}
 }
