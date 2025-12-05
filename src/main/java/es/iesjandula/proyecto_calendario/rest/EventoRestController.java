@@ -101,7 +101,6 @@ public class EventoRestController
                 log.error(Constants.ERR_CATEGORIA_NO_EXISTE);
                 throw new CalendarioException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_NO_EXISTE);
             }
-            Categoria categoria = categoriaOpt.get();
 
             Evento evento = new Evento();
             evento.setEventoId(eventoId);
