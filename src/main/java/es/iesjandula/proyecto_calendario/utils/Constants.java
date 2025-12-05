@@ -11,15 +11,6 @@ public class Constants
     public static final String ELEMENTO_ELIMINADO = "Elemento eliminado correctamente.";
     public static final String ELEMENTO_MOSTRADO = "Elemento mostrado correctamente.";
 
-    // --- Errores de Usuario ---
-    public static final Integer ERR_USUARIO_CODE = 1;
-    public static final String ERR_USUARIO = "USUARIO_ERROR";
-    public static final Integer ERR_USUARIO_CORREO_NULO_CODE = 2;
-    public static final String ERR_USUARIO_CORREO_NULO_VACIO = "El correo del usuario no puede ser nulo ni vacío.";
-    public static final Integer ERR_USUARIO_EXISTE_CODE = 3;
-    public static final String ERR_USUARIO_EXISTE = "El usuario ya existe en el sistema.";
-    public static final Integer ERR_USUARIO_NO_EXISTE_CODE = 4;
-    public static final String ERR_USUARIO_NO_EXISTE = "El usuario no existe en el sistema.";
 
     // --- Errores de Categoría ---
     public static final Integer ERR_CATEGORIA_CODE = 5;

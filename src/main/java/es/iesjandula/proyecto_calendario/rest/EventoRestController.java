@@ -6,11 +6,11 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,10 +27,12 @@ import es.iesjandula.proyecto_calendario.repository.IEventoRepository;
 import es.iesjandula.proyecto_calendario.repository.IUsuarioRepository;
 import es.iesjandula.proyecto_calendario.utils.CalendarioException;
 import es.iesjandula.proyecto_calendario.utils.Constants;
+import es.iesjandula.reaktor.base.security.models.DtoUsuarioExtended;
+import es.iesjandula.reaktor.base.utils.BaseConstants;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RequestMapping("/api/evento")
+@RequestMapping("/events/manager")
 @RestController
 public class EventoRestController
 {
@@ -42,9 +44,10 @@ public class EventoRestController
 
     @Autowired
     private ICategoriaRepository categoriaRepository;
-
+    
+    @PreAuthorize("hasAnyRole('" + BaseConstants.ROLE_PROFESOR + "')")
     @PostMapping(value = "/", consumes = "application/json")
-    public ResponseEntity<?> crearEvento(@RequestBody EventoRequestDto eventoRequestDto)
+    public ResponseEntity<?> crearEvento(@AuthenticationPrincipal DtoUsuarioExtended usuario, @RequestBody EventoRequestDto eventoRequestDto)
     {
         try
         {
@@ -65,14 +68,33 @@ public class EventoRestController
                 log.error(Constants.ERR_EVENTO_EXISTE);
                 throw new CalendarioException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_EXISTE);
             }
-            Optional<Usuario> usuarioOpt = this.usuarioRepository.findById(eventoRequestDto.getEmail());
-            if (!usuarioOpt.isPresent())
-            {
-                log.error(Constants.ERR_USUARIO_NO_EXISTE);
-                throw new CalendarioException(Constants.ERR_USUARIO_CODE, Constants.ERR_USUARIO_NO_EXISTE);
-            }
-            Usuario usuario = usuarioOpt.get();
-            
+         // Creamos variable de usuario
+    		Usuario usuarioDatabase = null;
+
+    		// Buscamos si existe el usuario, sino lo creamos
+    		Optional<Usuario> usuarioDatabaseOptional = this.usuarioRepository.findById(usuario.getEmail()) ;
+
+    		// Si no existe el usuario ...
+    		if (usuarioDatabaseOptional.isEmpty())
+    		{
+    			// ... creamos una nueva instancia de usuario
+    			usuarioDatabase = new Usuario() ;
+
+    			// Seteamos los atributos del usuario
+    			usuarioDatabase.setEmail(usuario.getEmail());
+    			usuarioDatabase.setNombre(usuario.getNombre());
+
+
+    			// Guardamos el usuario en la base de datos
+    			this.usuarioRepository.saveAndFlush(usuarioDatabase);
+    		}
+    		else
+    		{
+    			// ... obtenemos el usuario de la base de datos
+    			usuarioDatabase = usuarioDatabaseOptional.get();
+    		}
+
+
             Optional<Categoria> categoriaOpt = this.categoriaRepository.findById(eventoRequestDto.getNombre());
             if (!categoriaOpt.isPresent())
             {
@@ -83,7 +105,7 @@ public class EventoRestController
 
             Evento evento = new Evento();
             evento.setEventoId(eventoId);
-            evento.setUsuario(usuarioOpt.get());
+            evento.setUsuario(usuarioDatabase);
             evento.setCategoria(categoriaOpt.get());
 
             eventoRepository.saveAndFlush(evento);
@@ -102,79 +124,7 @@ public class EventoRestController
         }
     }
 
-   @PutMapping(value = "/", consumes = "application/json")
-   public ResponseEntity<?> modificarEvento(@RequestBody EventoRequestDto eventoRequestDto)
-   {
-	   
-       try
-       {
-    	       
-           if (eventoRequestDto.getTitulo() == null || eventoRequestDto.getTitulo().isEmpty())
-           {
-               log.error(Constants.ERR_EVENTO_TITULO_NULO_VACIO);
-               throw new CalendarioException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_TITULO_NULO_VACIO);
-           }
-           Date fechaInicio = toDate(eventoRequestDto.getFechaInicio());
-           Date fechaFin = toDate(eventoRequestDto.getFechaFin()) ;
-           
-           EventoId eventoId = new EventoId(eventoRequestDto.getTitulo(), fechaInicio,fechaFin);
-
-           Optional<Evento> eventoOpt = eventoRepository.findById(eventoId);
-           if (!eventoOpt.isPresent())
-           {
-               log.error(Constants.ERR_EVENTO_NO_EXISTE);
-               throw new CalendarioException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_NO_EXISTE);
-           }
-
-           Evento evento = eventoOpt.get();
-
-           if (!fechaInicio.before(fechaFin))
-           {
-               log.error(Constants.ERR_EVENTO_FECHAS_INVALIDAS);
-               throw new CalendarioException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS);
-           }
-
-           Optional<Usuario> usuarioOpt = usuarioRepository.findById(eventoRequestDto.getEmail());
-           if (!usuarioOpt.isPresent())
-           {
-               log.error(Constants.ERR_USUARIO_NO_EXISTE);
-               throw new CalendarioException(Constants.ERR_USUARIO_CODE, Constants.ERR_USUARIO_NO_EXISTE);
-           }
-           Usuario usuario = usuarioOpt.get();
-           Optional<Categoria> categoriaOpt = null;
-           
-           Categoria categoria = null;
-           if (eventoRequestDto.getNombre() != null)
-           {
-               categoriaOpt = categoriaRepository.findById(eventoRequestDto.getNombre());
-               if (!categoriaOpt.isPresent())
-               {
-                   log.error(Constants.ERR_CATEGORIA_NO_EXISTE);
-                   throw new CalendarioException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_NO_EXISTE);
-               }
-               categoria = categoriaOpt.get();
-           }
-
-           evento.setEventoId(eventoId);
-           evento.setUsuario(usuarioOpt.get());
-           evento.setCategoria(categoriaOpt.get());
-
-           eventoRepository.saveAndFlush(evento);
-           log.info(Constants.ELEMENTO_MODIFICADO);
-           return ResponseEntity.ok().body(Constants.ELEMENTO_MODIFICADO);
-       }
-       catch (CalendarioException exception)
-       {
-           return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage());
-       }
-  	 	catch (Exception exception)
-       {
-   		CalendarioException calendarioException= new CalendarioException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
-           return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage());
-   		
-       }
-   }
-
+    @PreAuthorize("hasAnyRole('" + BaseConstants.ROLE_PROFESOR + "')")
     @DeleteMapping(value="/")
     public ResponseEntity<?> eliminarEvento(@RequestHeader String titulo,@RequestHeader Long fechaInicio,@RequestHeader Long fechaFin)
     {
@@ -207,6 +157,7 @@ public class EventoRestController
         }
     }
 
+    @PreAuthorize("hasAnyRole('" + BaseConstants.ROLE_PROFESOR + "')")
     @GetMapping(value="/")
     public ResponseEntity<?> obtenerEventos()
     {
@@ -216,6 +167,7 @@ public class EventoRestController
     /**
      * endpoint para obtener un evento a traves de su id
      */
+    @PreAuthorize("hasAnyRole('" + BaseConstants.ROLE_ADMINISTRADOR + "+"+BaseConstants.ROLE_DIRECCION +"')"+ "+"+BaseConstants.ROLE_PROFESOR+"')")
     @GetMapping("/filtro")
     public ResponseEntity<?> obtenerEventoPorId(@RequestHeader String titulo,@RequestHeader Long fechaInicio,@RequestHeader Long fechaFin)
     {
@@ -254,26 +206,36 @@ public class EventoRestController
     		
         }
     }
-    
+    @PreAuthorize("hasAnyRole('" + BaseConstants.ROLE_PROFESOR + "')")
     @GetMapping("/{correoUsuario}")
-    public ResponseEntity<?> obtenerEventosPorUsuario(@PathVariable String correoUsuario)
+    public ResponseEntity<?> obtenerEventosPorUsuario(@AuthenticationPrincipal DtoUsuarioExtended usuario)
     {
     	try
         {
-            if (correoUsuario == null || correoUsuario.trim().isEmpty())
+    		Usuario usuarioDatabase = null;
+
+    		// Buscamos si existe el usuario, sino lo creamos
+    		Optional<Usuario> usuarioDatabaseOptional = this.usuarioRepository.findById(usuario.getEmail()) ;
+
+            if (usuario.getEmail() == null || usuario.getEmail().isEmpty())
             {
-            	log.error(Constants.ERR_USUARIO_CORREO_NULO_VACIO);
-            	throw new CalendarioException(Constants.ERR_USUARIO_CORREO_NULO_CODE, Constants.ERR_USUARIO_CORREO_NULO_VACIO);
-            }
+            	usuarioDatabase = new Usuario() ;
+
+    			// Seteamos los atributos del usuario
+    			usuarioDatabase.setEmail(usuario.getEmail());
+    			usuarioDatabase.setNombre(usuario.getNombre());
+
+
+    			// Guardamos el usuario en la base de datos
+    			this.usuarioRepository.saveAndFlush(usuarioDatabase);
+    		}
+    		else
+    		{
+    			// ... obtenemos el usuario de la base de datos
+    			usuarioDatabase = usuarioDatabaseOptional.get();
+    		}
             
-            Optional<Usuario> usuarioOpt = this.usuarioRepository.findById(correoUsuario);
-            if (!usuarioOpt.isPresent())
-            {
-                log.error(Constants.ERR_USUARIO_NO_EXISTE);
-                throw new CalendarioException(Constants.ERR_USUARIO_NO_EXISTE_CODE, Constants.ERR_USUARIO_NO_EXISTE);
-            }
-           
-            List<EventoResponseDto> eventosDto = this.eventoRepository.buscarEventosPorUsuario(correoUsuario);
+            List<EventoResponseDto> eventosDto = this.eventoRepository.buscarEventosPorUsuario(usuario.getEmail());
             
             if (eventosDto == null || eventosDto.isEmpty())
             {
@@ -305,6 +267,7 @@ public class EventoRestController
     	}
     	return new Date(fecha);
     }
+
 }
 
 
