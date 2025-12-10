@@ -1,8 +1,8 @@
-package es.iesjandula.proyecto_calendario.repository;
+package es.iesjandula.reaktor.events_server.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import es.iesjandula.proyecto_calendario.models.Usuario;
+import es.iesjandula.reaktor.events_server.models.Usuario;
 
 /**
  * Repositorio JPA para la entidad Usuario.

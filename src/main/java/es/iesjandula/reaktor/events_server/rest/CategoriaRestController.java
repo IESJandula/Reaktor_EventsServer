@@ -1,4 +1,4 @@
-package es.iesjandula.proyecto_calendario.rest;
+package es.iesjandula.reaktor.events_server.rest;
 
 import java.util.List;
 
@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import es.iesjandula.proyecto_calendario.dto.CategoriaRequestDto;
-import es.iesjandula.proyecto_calendario.dto.CategoriaResponseDto;
-import es.iesjandula.proyecto_calendario.models.Categoria;
-import es.iesjandula.proyecto_calendario.repository.ICategoriaRepository;
-import es.iesjandula.proyecto_calendario.utils.CalendarioException;
-import es.iesjandula.proyecto_calendario.utils.Constants;
 import es.iesjandula.reaktor.base.utils.BaseConstants;
+import es.iesjandula.reaktor.events_server.dto.CategoriaRequestDto;
+import es.iesjandula.reaktor.events_server.dto.CategoriaResponseDto;
+import es.iesjandula.reaktor.events_server.models.Categoria;
+import es.iesjandula.reaktor.events_server.repository.ICategoriaRepository;
+import es.iesjandula.reaktor.events_server.utils.EventsServerException;
+import es.iesjandula.reaktor.events_server.utils.Constants;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -56,13 +56,13 @@ public class CategoriaRestController
 			if (categoriaRequestDto.getNombre() == null || categoriaRequestDto.getNombre().isEmpty())
 			{
 				log.error(Constants.ERR_CATEGORIA_NOMBRE_NULO_VACIO);
-				throw new CalendarioException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_NOMBRE_NULO_VACIO);
+				throw new EventsServerException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_NOMBRE_NULO_VACIO);
 			}
 			//Comprueba si ya existe una categoría con el mismo nombre en la base de datos
 			if (this.categoriaRepository.existsById(categoriaRequestDto.getNombre()))
 			{
 				log.error(Constants.ERR_CATEGORIA_EXISTE);
-				throw new CalendarioException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_EXISTE);
+				throw new EventsServerException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_EXISTE);
 			}
 
 			Categoria categoria = new Categoria();
@@ -73,13 +73,13 @@ public class CategoriaRestController
 			log.info(Constants.ELEMENTO_AGREGADO);
 			return ResponseEntity.ok().body(Constants.ELEMENTO_AGREGADO);
 		} 
-		catch (CalendarioException exception)
+		catch (EventsServerException exception)
 		{
 			return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage());
 		}
    	 	catch (Exception exception)
         {
-    		CalendarioException calendarioException= new CalendarioException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
+    		EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
             return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage());
     		
         }
@@ -105,20 +105,20 @@ public class CategoriaRestController
 			if (!this.categoriaRepository.existsById(nombre))
 			{
 				log.error(Constants.ERR_CATEGORIA_NO_EXISTE);
-				throw new CalendarioException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_NO_EXISTE);
+				throw new EventsServerException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_NO_EXISTE);
 			}
 
 			this.categoriaRepository.deleteById(nombre);
 			log.info(Constants.ELEMENTO_ELIMINADO);
 			return ResponseEntity.ok().body(Constants.ELEMENTO_ELIMINADO);
 		} 
-		catch (CalendarioException exception)
+		catch (EventsServerException exception)
 		{
 			return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage());
 		}
    	 	catch (Exception exception)
         {
-    		CalendarioException calendarioException= new CalendarioException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
+    		EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
             return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage());
     		
         }

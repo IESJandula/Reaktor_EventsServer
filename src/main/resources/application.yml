@@ -1,7 +1,7 @@
 spring:
     jpa.hibernate.ddl-auto: update
     datasource:
-        url: jdbc:mysql://localhost:3306/ProyectoCalendario?createDatabaseIfNotExist=true
+        url: jdbc:mysql://localhost:3306/EventsServer?createDatabaseIfNotExist=true
         username: root
         password: toor
         hikari:
@@ -22,7 +22,7 @@ logging:
 reaktor:
   publicKeyFile: C:\claves\public_key.pem
   urlCors: http://localhost:5173, http://192.168.1.209:5173, http://192.168.1.181:5173, http://192.168.1.137:5173, http://172.20.10.2:5173
-  firebase_server_url: http://localhost:8083
+  firebase_server_url: http://localhost:8089
   clientId: events
   http_connection_timeout: 30000
   reiniciarParametros: true

@@ -1,6 +1,6 @@
-package es.iesjandula.proyecto_calendario.models;
+package es.iesjandula.reaktor.events_server.models;
 
-import es.iesjandula.proyecto_calendario.models.ids.EventoId;
+import es.iesjandula.reaktor.events_server.models.ids.EventoId;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;

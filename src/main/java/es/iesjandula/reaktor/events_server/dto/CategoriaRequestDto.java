@@ -1,4 +1,4 @@
-package es.iesjandula.proyecto_calendario.dto;
+package es.iesjandula.reaktor.events_server.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

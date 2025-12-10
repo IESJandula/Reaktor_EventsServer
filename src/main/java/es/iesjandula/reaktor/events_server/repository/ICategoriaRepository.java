@@ -1,12 +1,12 @@
-package es.iesjandula.proyecto_calendario.repository;
+package es.iesjandula.reaktor.events_server.repository;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import es.iesjandula.proyecto_calendario.dto.CategoriaResponseDto;
-import es.iesjandula.proyecto_calendario.models.Categoria;
+import es.iesjandula.reaktor.events_server.dto.CategoriaResponseDto;
+import es.iesjandula.reaktor.events_server.models.Categoria;
 
 /**
  * Repositorio JPA para la entidad Categoria.

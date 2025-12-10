@@ -1,4 +1,4 @@
-package es.iesjandula.proyecto_calendario.utils.config;
+package es.iesjandula.reaktor.events_server.utils.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

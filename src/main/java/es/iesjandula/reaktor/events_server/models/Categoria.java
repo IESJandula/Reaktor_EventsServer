@@ -1,4 +1,4 @@
-package es.iesjandula.proyecto_calendario.models;
+package es.iesjandula.reaktor.events_server.models;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package es.iesjandula.proyecto_calendario.rest;
+package es.iesjandula.reaktor.events_server.rest;
 
 import java.util.Date;
 import java.util.List;
@@ -16,19 +16,19 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import es.iesjandula.proyecto_calendario.dto.EventoRequestDto;
-import es.iesjandula.proyecto_calendario.dto.EventoResponseDto;
-import es.iesjandula.proyecto_calendario.models.Categoria;
-import es.iesjandula.proyecto_calendario.models.Evento;
-import es.iesjandula.proyecto_calendario.models.Usuario;
-import es.iesjandula.proyecto_calendario.models.ids.EventoId;
-import es.iesjandula.proyecto_calendario.repository.ICategoriaRepository;
-import es.iesjandula.proyecto_calendario.repository.IEventoRepository;
-import es.iesjandula.proyecto_calendario.repository.IUsuarioRepository;
-import es.iesjandula.proyecto_calendario.utils.CalendarioException;
-import es.iesjandula.proyecto_calendario.utils.Constants;
 import es.iesjandula.reaktor.base.security.models.DtoUsuarioExtended;
 import es.iesjandula.reaktor.base.utils.BaseConstants;
+import es.iesjandula.reaktor.events_server.dto.EventoRequestDto;
+import es.iesjandula.reaktor.events_server.dto.EventoResponseDto;
+import es.iesjandula.reaktor.events_server.models.Categoria;
+import es.iesjandula.reaktor.events_server.models.Evento;
+import es.iesjandula.reaktor.events_server.models.Usuario;
+import es.iesjandula.reaktor.events_server.models.ids.EventoId;
+import es.iesjandula.reaktor.events_server.repository.ICategoriaRepository;
+import es.iesjandula.reaktor.events_server.repository.IEventoRepository;
+import es.iesjandula.reaktor.events_server.repository.IUsuarioRepository;
+import es.iesjandula.reaktor.events_server.utils.EventsServerException;
+import es.iesjandula.reaktor.events_server.utils.Constants;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -74,7 +74,7 @@ public class EventoRestController
             if (eventoRequestDto.getTitulo() == null || eventoRequestDto.getTitulo().isEmpty())
             {
                 log.error(Constants.ERR_EVENTO_TITULO_NULO_VACIO);
-                throw new CalendarioException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_TITULO_NULO_VACIO);
+                throw new EventsServerException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_TITULO_NULO_VACIO);
             }
             
             // Hacemos la conversión de Long a Date para su registro.
@@ -88,7 +88,7 @@ public class EventoRestController
             if (this.eventoRepository.existsById(eventoId))
             {
                 log.error(Constants.ERR_EVENTO_EXISTE);
-                throw new CalendarioException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_EXISTE);
+                throw new EventsServerException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_EXISTE);
             }
             // Creamos variable de usuario
     		Usuario usuarioDatabase = null;
@@ -123,7 +123,7 @@ public class EventoRestController
             if (!categoriaOpt.isPresent())
             {
                 log.error(Constants.ERR_CATEGORIA_NO_EXISTE);
-                throw new CalendarioException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_NO_EXISTE);
+                throw new EventsServerException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_NO_EXISTE);
             }
 
 
@@ -136,13 +136,13 @@ public class EventoRestController
             log.info(Constants.ELEMENTO_AGREGADO);
             return ResponseEntity.ok().body(Constants.ELEMENTO_AGREGADO);
         }
-        catch (CalendarioException exception)
+        catch (EventsServerException exception)
         {
             return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage());
         }
    	 	catch (Exception exception)
         {
-    		CalendarioException calendarioException= new CalendarioException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
+    		EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
             return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage());
     		
         }
@@ -171,20 +171,20 @@ public class EventoRestController
             if (!this.eventoRepository.existsById(eventoId))
             {
                 log.error(Constants.ERR_EVENTO_NO_EXISTE);
-                throw new CalendarioException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_NO_EXISTE);
+                throw new EventsServerException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_NO_EXISTE);
             }
 
             this.eventoRepository.deleteById(eventoId);
             log.info(Constants.ELEMENTO_ELIMINADO);
             return ResponseEntity.ok().body(Constants.ELEMENTO_ELIMINADO);
         }
-        catch (CalendarioException exception)
+        catch (EventsServerException exception)
         {
             return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage());
         }
    	 	catch (Exception exception)
         {
-    		CalendarioException calendarioException= new CalendarioException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
+    		EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
             return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage());
     		
         }
@@ -227,7 +227,7 @@ public class EventoRestController
             if (!eventoOpt.isPresent())
             {
                 log.error(Constants.ERR_EVENTO_NO_EXISTE);
-                throw new CalendarioException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_NO_EXISTE);
+                throw new EventsServerException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_NO_EXISTE);
             }
        	 
 
@@ -239,13 +239,13 @@ public class EventoRestController
             eventoResponseDto.setFechaFin(evento.getEventoId().getFechaFin());
             return ResponseEntity.ok(eventoResponseDto);
 
-        } catch (CalendarioException exception) {
+        } catch (EventsServerException exception) {
             
         	return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage());
         }
    	 	catch (Exception exception)
         {
-    		CalendarioException calendarioException= new CalendarioException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
+    		EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
             return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage());
     		
         }
@@ -294,18 +294,18 @@ public class EventoRestController
             if (eventosDto == null || eventosDto.isEmpty())
             {
                 log.error(Constants.ERR_EVENTO_NO_EXISTE);
-                throw new CalendarioException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_NO_EXISTE);
+                throw new EventsServerException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_NO_EXISTE);
             }
 
             return ResponseEntity.ok(eventosDto);
         }
-        catch (CalendarioException exception)
+        catch (EventsServerException exception)
         {
             return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage());
         }
     	 catch (Exception exception)
         {
-    		CalendarioException calendarioException= new CalendarioException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
+    		EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
             return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage());
     		
         }
@@ -317,15 +317,15 @@ public class EventoRestController
      * 
      * @param fecha Fecha en milisegundos
      * @return Objeto Date correspondiente
-     * @throws CalendarioException Si la fecha es nula o menor/igual a 0
+     * @throws EventsServerException Si la fecha es nula o menor/igual a 0
      */
-    private Date toDate(Long fecha) throws CalendarioException
+    private Date toDate(Long fecha) throws EventsServerException
     {
         // Comprobamos que la fecha no sea nula ni menor o igual que 0
     	if(fecha == null || fecha <= 0)
     	{
     		log.error(Constants.ERR_EVENTO_FECHAS_INVALIDAS);
-            throw new CalendarioException(Constants.ERR_EVENTO_FECHAS_INVALIDAS_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS);
+            throw new EventsServerException(Constants.ERR_EVENTO_FECHAS_INVALIDAS_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS);
     	}
     	return new Date(fecha);
     }

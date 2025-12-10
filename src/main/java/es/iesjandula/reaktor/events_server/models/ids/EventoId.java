@@ -1,4 +1,4 @@
-package es.iesjandula.proyecto_calendario.models.ids;
+package es.iesjandula.reaktor.events_server.models.ids;
 
 import java.io.Serializable;
 import java.util.Date;

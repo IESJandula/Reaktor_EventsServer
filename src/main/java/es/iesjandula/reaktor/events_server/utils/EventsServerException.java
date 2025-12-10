@@ -1,4 +1,4 @@
-package es.iesjandula.proyecto_calendario.utils;
+package es.iesjandula.reaktor.events_server.utils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +11,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
  * <p>Permite manejar errores con un código y mensaje específicos,
  * y opcionalmente almacenar la excepción original.</p>
  */
-public class CalendarioException extends Exception
+public class EventsServerException extends Exception
 {
 
 	private static final long serialVersionUID = -9080070553502409936L;
@@ -32,7 +32,7 @@ public class CalendarioException extends Exception
      * @param codigo Código de error
      * @param mensaje Mensaje de error
      */
-	public CalendarioException(Integer codigo, String mensaje)
+	public EventsServerException(Integer codigo, String mensaje)
 	{
 		super();
 		
@@ -47,7 +47,7 @@ public class CalendarioException extends Exception
      * @param mensaje Mensaje de error
      * @param excepcion Excepción original asociada
      */
-	public CalendarioException(Integer movieErrorId, String message, Throwable excepcion)
+	public EventsServerException(Integer movieErrorId, String message, Throwable excepcion)
 	{
 		super(message, excepcion);
 		

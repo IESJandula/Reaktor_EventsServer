@@ -1,4 +1,4 @@
-package es.iesjandula.proyecto_calendario.repository;
+package es.iesjandula.reaktor.events_server.repository;
 
 import java.util.List;
 
@@ -6,9 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import es.iesjandula.proyecto_calendario.dto.EventoResponseDto;
-import es.iesjandula.proyecto_calendario.models.Evento;
-import es.iesjandula.proyecto_calendario.models.ids.EventoId;
+import es.iesjandula.reaktor.events_server.dto.EventoResponseDto;
+import es.iesjandula.reaktor.events_server.models.Evento;
+import es.iesjandula.reaktor.events_server.models.ids.EventoId;
 
 /**
  * Repositorio JPA para la entidad Evento.
@@ -52,7 +52,6 @@ public interface IEventoRepository extends JpaRepository<Evento, EventoId>
 		       "JOIN e.usuario u " +
 		       "WHERE u.email = :email" )
 	List<EventoResponseDto> buscarEventosPorUsuario(@Param("email") String email);
-
 	
 }
 
