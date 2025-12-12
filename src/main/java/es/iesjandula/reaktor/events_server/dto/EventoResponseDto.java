@@ -1,7 +1,5 @@
 package es.iesjandula.reaktor.events_server.dto;
 
-import java.util.Date;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,12 +28,12 @@ public class EventoResponseDto
     /**
      * Fecha y hora de inicio del evento.
      */
-    private Date fechaInicio;
+    private Long fechaInicio;
     
     /**
      * Fecha y hora de fin del evento.
      */
-    private Date fechaFin;
+    private Long fechaFin;
     
     /**
      * Correo electrónico del usuario asociado al evento.

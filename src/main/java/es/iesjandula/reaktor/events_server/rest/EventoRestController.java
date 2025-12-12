@@ -27,8 +27,8 @@ import es.iesjandula.reaktor.events_server.models.ids.EventoId;
 import es.iesjandula.reaktor.events_server.repository.ICategoriaRepository;
 import es.iesjandula.reaktor.events_server.repository.IEventoRepository;
 import es.iesjandula.reaktor.events_server.repository.IUsuarioRepository;
-import es.iesjandula.reaktor.events_server.utils.EventsServerException;
 import es.iesjandula.reaktor.events_server.utils.Constants;
+import es.iesjandula.reaktor.events_server.utils.EventsServerException;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -44,15 +44,15 @@ public class EventoRestController
 {
 	//Repositorio para manejar la entidad Evento
     @Autowired
-    private IEventoRepository eventoRepository;
+    private IEventoRepository eventoRepository ;
 
     //Repositorio para manejar la entidad Usuario
     @Autowired
-    private IUsuarioRepository usuarioRepository;
+    private IUsuarioRepository usuarioRepository ;
 
     //Repositorio para manejar la entidad Categoria
     @Autowired
-    private ICategoriaRepository categoriaRepository;
+    private ICategoriaRepository categoriaRepository ;
     
     /**
      * Endpoint para crear un nuevo evento.
@@ -73,25 +73,32 @@ public class EventoRestController
         	 //Validamos que el titulo no venga nulo o vacio
             if (eventoRequestDto.getTitulo() == null || eventoRequestDto.getTitulo().isEmpty())
             {
-                log.error(Constants.ERR_EVENTO_TITULO_NULO_VACIO);
-                throw new EventsServerException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_TITULO_NULO_VACIO);
+                log.error(Constants.ERR_EVENTO_TITULO_NULO_VACIO) ;
+                throw new EventsServerException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_TITULO_NULO_VACIO) ;
             }
             
             // Hacemos la conversión de Long a Date para su registro.
-        	Date fechaInicio = toDate(eventoRequestDto.getFechaInicio());
+        	Date fechaInicio = toDate(eventoRequestDto.getFechaInicio()) ;
             Date fechaFin = toDate(eventoRequestDto.getFechaFin()) ;
             
+            // Validamos que las fechas introducidas sean correctas
+            if (fechaFin.before(fechaInicio)) 
+            {
+            	log.error(Constants.ERR_EVENTO_FECHAS_INVALIDAS) ;
+                throw new EventsServerException(Constants.ERR_EVENTO_FECHAS_INVALIDAS_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS) ;
+            }
+            
             //Recogemos los atributos principales del Evento
-            EventoId eventoId = new EventoId(eventoRequestDto.getTitulo(), fechaInicio,fechaFin);
+            EventoId eventoId = new EventoId(eventoRequestDto.getTitulo(), eventoRequestDto.getFechaInicio(),eventoRequestDto.getFechaFin()) ;
 
             // Comprobamos si ya existe un evento con el mismo ID compuesto en la base de datos
             if (this.eventoRepository.existsById(eventoId))
             {
-                log.error(Constants.ERR_EVENTO_EXISTE);
-                throw new EventsServerException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_EXISTE);
+                log.error(Constants.ERR_EVENTO_EXISTE) ;
+                throw new EventsServerException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_EXISTE) ;
             }
             // Creamos variable de usuario
-    		Usuario usuarioDatabase = null;
+    		Usuario usuarioDatabase = null ;
 
     		// Buscamos si existe el usuario, sino lo creamos
     		Optional<Usuario> usuarioDatabaseOptional = this.usuarioRepository.findById(usuario.getEmail()) ;
@@ -103,47 +110,47 @@ public class EventoRestController
     			usuarioDatabase = new Usuario() ;
 
     			// Seteamos los atributos del usuario
-    			usuarioDatabase.setEmail(usuario.getEmail());
-    			usuarioDatabase.setNombre(usuario.getNombre());
+    			usuarioDatabase.setEmail(usuario.getEmail()) ;
+    			usuarioDatabase.setNombre(usuario.getNombre()) ;
 
 
     			// Guardamos el usuario en la base de datos
-    			this.usuarioRepository.saveAndFlush(usuarioDatabase);
+    			this.usuarioRepository.saveAndFlush(usuarioDatabase) ;
     		}
     		else
     		{
                 // Si ya existe, recuperamos el usuario de la base de datos
-    			usuarioDatabase = usuarioDatabaseOptional.get();
+    			usuarioDatabase = usuarioDatabaseOptional.get() ;
     		}
 
     		
-            Optional<Categoria> categoriaOpt = this.categoriaRepository.findById(eventoRequestDto.getNombre());
+            Optional<Categoria> categoriaOpt = this.categoriaRepository.findById(eventoRequestDto.getNombre()) ;
 
             // Comprobamos si la categoría asociada al evento existe en la base de datos
             if (!categoriaOpt.isPresent())
             {
                 log.error(Constants.ERR_CATEGORIA_NO_EXISTE);
-                throw new EventsServerException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_NO_EXISTE);
+                throw new EventsServerException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_NO_EXISTE) ;
             }
 
 
-            Evento evento = new Evento();
-            evento.setEventoId(eventoId);
-            evento.setUsuario(usuarioDatabase);
-            evento.setCategoria(categoriaOpt.get());
+            Evento evento = new Evento() ;
+            evento.setEventoId(eventoId) ;
+            evento.setUsuario(usuarioDatabase) ;
+            evento.setCategoria(categoriaOpt.get()) ;
 
-            this.eventoRepository.saveAndFlush(evento);
-            log.info(Constants.ELEMENTO_AGREGADO);
-            return ResponseEntity.ok().body(Constants.ELEMENTO_AGREGADO);
+            this.eventoRepository.saveAndFlush(evento) ;
+            log.info(Constants.ELEMENTO_AGREGADO) ;
+            return ResponseEntity.ok().body(Constants.ELEMENTO_AGREGADO) ;
         }
         catch (EventsServerException exception)
         {
-            return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage());
+            return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage()) ;
         }
    	 	catch (Exception exception)
         {
-    		EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
-            return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage());
+    		EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR) ;
+            return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage()) ;
     		
         }
     }
@@ -162,10 +169,18 @@ public class EventoRestController
     {
         try
         {
-        	Date fechInicio = toDate(fechaInicio);
-            Date fechFin = toDate(fechaFin) ;
+        	// Hacemos la conversión de Long a Date para su registro.
+        	Date fechaInicioDate = toDate(fechaInicio) ;
+            Date fechaFinDate = toDate(fechaFin) ;
             
-            EventoId eventoId = new EventoId(titulo,fechInicio,fechFin);
+            // Validamos que las fechas introducidas sean correctas
+            if (fechaFinDate.before(fechaInicioDate)) 
+            {
+            	log.error(Constants.ERR_EVENTO_FECHAS_INVALIDAS) ;
+                throw new EventsServerException(Constants.ERR_EVENTO_FECHAS_INVALIDAS_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS) ;
+            }
+                  
+            EventoId eventoId = new EventoId(titulo, fechaInicio, fechaFin) ;
 
             // Comprobamos si el evento que se desea eliminar NO existe en la base de datos
             if (!this.eventoRepository.existsById(eventoId))
@@ -174,18 +189,18 @@ public class EventoRestController
                 throw new EventsServerException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_NO_EXISTE);
             }
 
-            this.eventoRepository.deleteById(eventoId);
-            log.info(Constants.ELEMENTO_ELIMINADO);
-            return ResponseEntity.ok().body(Constants.ELEMENTO_ELIMINADO);
+            this.eventoRepository.deleteById(eventoId) ;
+            log.info(Constants.ELEMENTO_ELIMINADO) ;
+            return ResponseEntity.ok().body(Constants.ELEMENTO_ELIMINADO) ;
         }
         catch (EventsServerException exception)
         {
-            return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage());
+            return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage()) ;
         }
    	 	catch (Exception exception)
         {
-    		EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
-            return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage());
+    		EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR) ;
+            return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage()) ;
     		
         }
     }
@@ -199,8 +214,16 @@ public class EventoRestController
     @GetMapping(value="/")
     public ResponseEntity<?> obtenerEventos()
     {
-    	List<EventoResponseDto> eventos = this.eventoRepository.buscarEventos();
-        return ResponseEntity.ok(eventos);
+    	try
+    	{
+    	List<EventoResponseDto> eventos = this.eventoRepository.buscarEventos() ;
+        return ResponseEntity.ok(eventos) ;
+    	}
+	 	catch (Exception exception)
+    	{
+		EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR) ;
+        return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage()) ;	
+    	}
     }
     /**
      * Endpoint para obtener un evento específico por su ID compuesto.
@@ -217,36 +240,46 @@ public class EventoRestController
     	
         try
         {
-        	Date fechInicio = toDate(fechaInicio);
-            Date fechFin = toDate(fechaFin) ;
+        	// Hacemos la conversión de Long a Date para su registro.
+        	Date fechaInicioDate = toDate(fechaInicio) ;
+            Date fechaFinDate = toDate(fechaFin) ;
             
-            EventoId eventoId = new EventoId(titulo,fechInicio,fechFin);
-            Optional<Evento> eventoOpt = this.eventoRepository.findById(eventoId);
+            // Validamos que las fechas introducidas sean correctas
+            if (fechaFinDate.before(fechaInicioDate)) 
+            {
+            	log.error(Constants.ERR_EVENTO_FECHAS_INVALIDAS) ;
+                throw new EventsServerException(Constants.ERR_EVENTO_FECHAS_INVALIDAS_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS) ;
+            }
+                  
+            EventoId eventoId = new EventoId(titulo, fechaInicio, fechaFin) ;
+            Optional<Evento> eventoOpt = this.eventoRepository.findById(eventoId) ;
 
             // Comprobamos si el evento buscado no existe en la base de datos
             if (!eventoOpt.isPresent())
             {
-                log.error(Constants.ERR_EVENTO_NO_EXISTE);
-                throw new EventsServerException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_NO_EXISTE);
+                log.error(Constants.ERR_EVENTO_NO_EXISTE) ;
+                throw new EventsServerException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_NO_EXISTE) ;
             }
        	 
 
-            Evento evento = eventoOpt.get(); 
+            Evento evento = eventoOpt.get() ; 
             
-            EventoResponseDto eventoResponseDto = new EventoResponseDto();
-            eventoResponseDto.setTitulo(evento.getEventoId().getTitulo());
-            eventoResponseDto.setFechaInicio(evento.getEventoId().getFechaInicio());
-            eventoResponseDto.setFechaFin(evento.getEventoId().getFechaFin());
-            return ResponseEntity.ok(eventoResponseDto);
+            EventoResponseDto eventoResponseDto = new EventoResponseDto() ;
+            eventoResponseDto.setTitulo(evento.getEventoId().getTitulo()) ;
+            eventoResponseDto.setFechaInicio(evento.getEventoId().getFechaInicio()) ;
+            eventoResponseDto.setFechaFin(evento.getEventoId().getFechaFin()) ;
+            return ResponseEntity.ok(eventoResponseDto) ;
 
-        } catch (EventsServerException exception) {
+        } 
+        catch (EventsServerException exception)  
+        {
             
-        	return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage());
+        	return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage()) ;
         }
    	 	catch (Exception exception)
         {
-    		EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
-            return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage());
+    		EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR) ;
+            return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage()) ;
     		
         }
     }
@@ -258,11 +291,12 @@ public class EventoRestController
      * @return ResponseEntity con la lista de eventos del usuario
      */
     @PreAuthorize("hasAnyRole('" + BaseConstants.ROLE_PROFESOR + "')")
-    @GetMapping("/{correoUsuario}")
+    @GetMapping("/{email}")
     public ResponseEntity<?> obtenerEventosPorUsuario(@AuthenticationPrincipal DtoUsuarioExtended usuario)
     {
     	try
         {
+    		
     		Usuario usuarioDatabase = null;
 
     		// Buscamos si existe el usuario, sino lo creamos
@@ -275,38 +309,47 @@ public class EventoRestController
             	usuarioDatabase = new Usuario() ;
 
     			// Seteamos los atributos del usuario
-    			usuarioDatabase.setEmail(usuario.getEmail());
-    			usuarioDatabase.setNombre(usuario.getNombre());
+    			usuarioDatabase.setEmail(usuario.getEmail()) ;
+    			usuarioDatabase.setNombre(usuario.getNombre()) ;
 
 
     			// Guardamos el usuario en la base de datos
-    			this.usuarioRepository.saveAndFlush(usuarioDatabase);
+    			this.usuarioRepository.saveAndFlush(usuarioDatabase) ;
     		}
     		else
     		{
     			// Obtenemos el usuario de la base de datos
-    			usuarioDatabase = usuarioDatabaseOptional.get();
+    			usuarioDatabase = usuarioDatabaseOptional.get() ;
     		}
             
-            List<EventoResponseDto> eventosDto = this.eventoRepository.buscarEventosPorUsuario(usuario.getEmail());
+            List<EventoResponseDto> eventosDto = this.eventoRepository.buscarEventosPorUsuario(usuario.getEmail()) ;
 
+            // Comprobamos el rol del usuario registrado
+            if(usuario.getRoles().contains(BaseConstants.ROLE_ADMINISTRADOR))
+            {
+            	eventosDto = eventoRepository.buscarEventos() ;
+            }
+            else
+            {
+            	eventosDto = eventoRepository.buscarEventosPorUsuario(usuario.getEmail()) ;
+            }
             // Comprobamos si el usuario no tiene eventos asociados
             if (eventosDto == null || eventosDto.isEmpty())
             {
                 log.error(Constants.ERR_EVENTO_NO_EXISTE);
-                throw new EventsServerException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_NO_EXISTE);
+                throw new EventsServerException(Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_NO_EXISTE) ;
             }
 
-            return ResponseEntity.ok(eventosDto);
+            return ResponseEntity.ok(eventosDto) ;
         }
         catch (EventsServerException exception)
         {
-            return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage());
+            return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage()) ;
         }
     	 catch (Exception exception)
         {
-    		EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
-            return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage());
+    		EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR) ;
+            return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage()) ;
     		
         }
     
@@ -324,10 +367,10 @@ public class EventoRestController
         // Comprobamos que la fecha no sea nula ni menor o igual que 0
     	if(fecha == null || fecha <= 0)
     	{
-    		log.error(Constants.ERR_EVENTO_FECHAS_INVALIDAS);
-            throw new EventsServerException(Constants.ERR_EVENTO_FECHAS_INVALIDAS_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS);
+    		log.error(Constants.ERR_EVENTO_FECHAS_INVALIDAS) ;
+            throw new EventsServerException(Constants.ERR_EVENTO_FECHAS_INVALIDAS_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS) ;
     	}
-    	return new Date(fecha);
+    	return new Date(fecha) ;
     }
 
 }

@@ -1,7 +1,6 @@
 package es.iesjandula.reaktor.events_server.models.ids;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
@@ -40,12 +39,12 @@ public class EventoId implements Serializable
      * Fecha de inicio del evento.
      * Forma parte de la clave primaria compuesta.
      */
-    private Date fechaInicio;
+    private Long fechaInicio;
     
     /**
      * Fecha de fin del evento.
      * Forma parte de la clave primaria compuesta.
      */
-    private Date fechaFin;
+    private Long fechaFin;
 
 }

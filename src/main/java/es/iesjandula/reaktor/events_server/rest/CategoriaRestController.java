@@ -48,7 +48,7 @@ public class CategoriaRestController
      */
     @PreAuthorize("hasAnyRole('" + BaseConstants.ROLE_PROFESOR + "')")
 	@PostMapping(value = "/", consumes = "application/json")
-	public ResponseEntity<?> crearModificarCategoria(@RequestBody CategoriaRequestDto categoriaRequestDto)
+	public ResponseEntity<?> crearCategoria(@RequestBody CategoriaRequestDto categoriaRequestDto)
 	{
 		try
 		{
@@ -136,9 +136,15 @@ public class CategoriaRestController
 	@GetMapping(value = "/")
 	public ResponseEntity<?> obtenerCategorias()
 	{
+    	try 
+    	{
 		List<CategoriaResponseDto> categorias = this.categoriaRepository.buscarCategorias();
 		return ResponseEntity.ok(categorias);
-	}
-
-    
+		} 
+   	 	catch (Exception exception)
+        {
+    		EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
+            return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage());	
+        }
+	} 
 }
