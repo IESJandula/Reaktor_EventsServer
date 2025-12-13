@@ -27,11 +27,9 @@ public interface IEventoRepository extends JpaRepository<Evento, EventoId>
      * 
      * @return Lista de EventoResponseDto con los datos de cada evento.
      */
-	@Query("SELECT new es.iesjandula.proyecto_calendario.dto.EventoResponseDto(" +
-	           "e.eventoId.titulo, e.eventoId.fechaInicio, e.eventoId.fechaFin, " +
-	           "e.usuario.email, " +
-	           "e.categoria.nombre) " +
-	           "FROM Evento e")
+	@Query("SELECT new es.iesjandula.reaktor.events_server.dto.EventoResponseDto(" + 
+			"e.id.titulo, e.id.fechaInicio, e.id.fechaFin, u.email, u.nombre)" + 
+			"FROM Evento e JOIN e.usuario u")
 	List<EventoResponseDto> buscarEventos();
 	
 	   /**
@@ -45,12 +43,10 @@ public interface IEventoRepository extends JpaRepository<Evento, EventoId>
      * @param email Correo electrónico del usuario cuyos eventos se desean recuperar.
      * @return Lista de EventoResponseDto con los eventos del usuario.
      */
-	@Query("SELECT new es.iesjandula.proyecto_calendario.dto.EventoResponseDto(" +
-	           "e.eventoId.titulo, e.eventoId.fechaInicio, e.eventoId.fechaFin, " +
-	           "e.usuario.email, e.categoria.nombre) " +
-	           "FROM Evento e " +
-		       "JOIN e.usuario u " +
-		       "WHERE u.email = :email" )
+	@Query("SELECT new es.iesjandula.reaktor.events_server.dto.EventoResponseDto(" + 
+			"e.id.titulo, e.id.fechaInicio, e.id.fechaFin, u.email, u.nombre)" + 
+			"FROM Evento e JOIN e.usuario u " + 
+			"WHERE u.email = :email" )
 	List<EventoResponseDto> buscarEventosPorUsuario(@Param("email") String email);
 	
 }

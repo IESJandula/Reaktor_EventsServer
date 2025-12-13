@@ -26,7 +26,7 @@ public interface ICategoriaRepository extends JpaRepository<Categoria, String>
     * 
     * @return Lista de CategoriaResponseDto con el nombre y color de cada categoría.
     */
-	@Query("SELECT new es.iesjandula.proyecto_calendario.dto.CategoriaResponseDto(c.nombre, c.color) " +
-		       "FROM Categoria c")
+	@Query("SELECT new es.iesjandula.reaktor.events_server.dto.CategoriaResponseDto(c.nombre, c.color)" + 
+			"FROM Categoria c")
 	List<CategoriaResponseDto> buscarCategorias();
 }
