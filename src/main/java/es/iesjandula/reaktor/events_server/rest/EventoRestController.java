@@ -89,7 +89,7 @@ public class EventoRestController
             }
             
             //Recogemos los atributos principales del Evento
-            EventoId eventoId = new EventoId(eventoRequestDto.getTitulo(), eventoRequestDto.getFechaInicio(),eventoRequestDto.getFechaFin()) ;
+            EventoId eventoId = new EventoId(eventoRequestDto.getTitulo(), fechaInicio,fechaFin) ;
 
             // Comprobamos si ya existe un evento con el mismo ID compuesto en la base de datos
             if (this.eventoRepository.existsById(eventoId))
@@ -180,7 +180,7 @@ public class EventoRestController
                 throw new EventsServerException(Constants.ERR_EVENTO_FECHAS_INVALIDAS_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS) ;
             }
                   
-            EventoId eventoId = new EventoId(titulo, fechaInicio, fechaFin) ;
+            EventoId eventoId = new EventoId(titulo, fechaInicioDate, fechaFinDate) ;
 
             // Comprobamos si el evento que se desea eliminar NO existe en la base de datos
             if (!this.eventoRepository.existsById(eventoId))
@@ -251,7 +251,7 @@ public class EventoRestController
                 throw new EventsServerException(Constants.ERR_EVENTO_FECHAS_INVALIDAS_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS) ;
             }
                   
-            EventoId eventoId = new EventoId(titulo, fechaInicio, fechaFin) ;
+            EventoId eventoId = new EventoId(titulo, fechaInicioDate, fechaFinDate) ;
             Optional<Evento> eventoOpt = this.eventoRepository.findById(eventoId) ;
 
             // Comprobamos si el evento buscado no existe en la base de datos
@@ -266,8 +266,8 @@ public class EventoRestController
             
             EventoResponseDto eventoResponseDto = new EventoResponseDto() ;
             eventoResponseDto.setTitulo(evento.getEventoId().getTitulo()) ;
-            eventoResponseDto.setFechaInicio(evento.getEventoId().getFechaInicio()) ;
-            eventoResponseDto.setFechaFin(evento.getEventoId().getFechaFin()) ;
+            eventoResponseDto.setFechaInicio(evento.getEventoId().getFechaInicio().getTime()) ;
+            eventoResponseDto.setFechaFin(evento.getEventoId().getFechaFin().getTime()) ;
             return ResponseEntity.ok(eventoResponseDto) ;
 
         } 

@@ -46,4 +46,6 @@ public class EventoResponseDto
      * Permite identificar al propietario o creador del evento.
      */
     private String nombre;
+    
+    
 }
