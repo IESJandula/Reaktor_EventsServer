@@ -1,6 +1,6 @@
 package es.iesjandula.reaktor.events_server.dto;
 
-import lombok.AllArgsConstructor;
+import java.util.Date;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,7 +16,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class EventoResponseDto
 {
     /**
@@ -46,6 +45,14 @@ public class EventoResponseDto
      * Permite identificar al propietario o creador del evento.
      */
     private String nombre;
+    
+    public EventoResponseDto(String titulo, Date fechaInicio, Date fechaFin, String email, String nombre) {
+        this.titulo = titulo;
+        this.fechaInicio = fechaInicio != null ? fechaInicio.getTime() : 0;
+        this.fechaFin = fechaFin != null ? fechaFin.getTime() : 0;
+        this.email = email;
+        this.nombre = nombre;
+    }
     
     
 }

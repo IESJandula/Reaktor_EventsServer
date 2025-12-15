@@ -1,13 +1,13 @@
 package es.iesjandula.reaktor.events_server.models.ids;
 
 import java.io.Serializable;
+
 import java.util.Date;
 
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  * Representa la clave primaria compuesta de la entidad Evento.
@@ -17,8 +17,7 @@ import lombok.Setter;
  * 
  * <p>Al implementar Serializable, puede ser utilizada como clave embebida en JPA.</p>
  */
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Embeddable
