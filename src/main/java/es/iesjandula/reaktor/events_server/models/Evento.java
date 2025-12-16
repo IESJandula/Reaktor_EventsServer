@@ -22,7 +22,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "eventos")
+@Table(name = "evento")
 
 public class Evento
 {
