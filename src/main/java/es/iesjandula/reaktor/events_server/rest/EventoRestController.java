@@ -69,8 +69,8 @@ public class EventoRestController
 
             
             // Hacemos la conversión de Long a Date para su registro.
-        	Date fechaInicio = toDate(eventoRequestDto.getFechaInicio()) ;
-            Date fechaFin = toDate(eventoRequestDto.getFechaFin()) ;
+        	Date fechaInicio = this.toDate(eventoRequestDto.getFechaInicio()) ;
+            Date fechaFin = this.toDate(eventoRequestDto.getFechaFin()) ;
             
             
             //Recogemos los atributos principales del Evento
@@ -129,8 +129,8 @@ public class EventoRestController
         	validarEliminarEvento(titulo, fechaInicio, fechaFin);
 
         	// Hacemos la conversión de Long a Date para su registro.
-        	Date fechaInicioDate = toDate(fechaInicio) ;
-            Date fechaFinDate = toDate(fechaFin) ;
+        	Date fechaInicioDate = this.toDate(fechaInicio) ;
+            Date fechaFinDate = this.toDate(fechaFin) ;
             
             // Montamos el evento 
             EventoId eventoId = new EventoId(titulo, fechaInicioDate, fechaFinDate) ;
@@ -212,8 +212,8 @@ public class EventoRestController
             validarObtenerEvento(titulo, fechaInicio, fechaFin);
             
         	// Hacemos la conversión de Long a Date para su registro.
-        	Date fechaInicioDate = toDate(fechaInicio) ;
-            Date fechaFinDate = toDate(fechaFin) ;
+        	Date fechaInicioDate = this.toDate(fechaInicio) ;
+            Date fechaFinDate = this.toDate(fechaFin) ;
             
             // Montamos el evento
             EventoId eventoId = new EventoId( titulo, fechaInicioDate, fechaFinDate) ;
