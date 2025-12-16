@@ -48,8 +48,8 @@ public class EventoResponseDto
     
     public EventoResponseDto(String titulo, Date fechaInicio, Date fechaFin, String email, String nombre) {
         this.titulo = titulo;
-        this.fechaInicio = fechaInicio != null ? fechaInicio.getTime() : 0;
-        this.fechaFin = fechaFin != null ? fechaFin.getTime() : 0;
+        this.fechaInicio = fechaInicio != null ? fechaInicio.getTime() : null;
+        this.fechaFin = fechaFin != null ? fechaFin.getTime() : null;
         this.email = email;
         this.nombre = nombre;
     }

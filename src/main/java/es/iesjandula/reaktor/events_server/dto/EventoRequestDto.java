@@ -37,12 +37,6 @@ public class EventoRequestDto
     private Long fechaFin;
     
     /**
-     * Correo electrónico del usuario al que pertenece el evento.
-     * Se utiliza para asociar el evento a un propietario.
-     */
-    private String email;
-    
-    /**
      * Nombre de la categoría a la que se asigna el evento.
      * Debe coincidir con una categoría existente en el sistema.
      */
