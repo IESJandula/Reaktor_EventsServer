@@ -98,7 +98,7 @@ public class EventoRestController
 
             this.eventoRepository.saveAndFlush(evento) ;
             log.info(Constants.ELEMENTO_AGREGADO) ;
-            return ResponseEntity.ok().body(Constants.ELEMENTO_AGREGADO) ;
+            return ResponseEntity.ok().build() ;
         }
         catch (EventsServerException exception)
         {

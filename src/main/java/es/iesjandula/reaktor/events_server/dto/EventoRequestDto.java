@@ -25,6 +25,12 @@ public class EventoRequestDto
     private String titulo;
     
     /**
+     * Nombre de la categoría a la que se asigna el evento.
+     * Debe coincidir con una categoría existente en el sistema.
+     */
+    private String nombre;
+    
+    /**
      * Fecha y hora de inicio del evento, representada como un valor en milisegundos
      * desde la época (Unix timestamp).
      */
@@ -36,9 +42,5 @@ public class EventoRequestDto
      */
     private Long fechaFin;
     
-    /**
-     * Nombre de la categoría a la que se asigna el evento.
-     * Debe coincidir con una categoría existente en el sistema.
-     */
-    private String nombre;
+
 }

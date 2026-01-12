@@ -71,7 +71,7 @@ public class CategoriaRestController
 
 			this.categoriaRepository.saveAndFlush(categoria);
 			log.info(Constants.ELEMENTO_AGREGADO);
-			return ResponseEntity.ok().body(Constants.ELEMENTO_AGREGADO);
+			return ResponseEntity.ok().build();
 		} 
 		catch (EventsServerException exception)
 		{
@@ -110,7 +110,7 @@ public class CategoriaRestController
 
 			this.categoriaRepository.deleteById(nombre);
 			log.info(Constants.ELEMENTO_ELIMINADO);
-			return ResponseEntity.ok().body(Constants.ELEMENTO_ELIMINADO);
+			return ResponseEntity.ok().build();
 		} 
 		catch (EventsServerException exception)
 		{
