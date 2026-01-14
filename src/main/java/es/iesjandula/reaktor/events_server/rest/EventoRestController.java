@@ -74,7 +74,7 @@ public class EventoRestController
             
             
             //Recogemos los atributos principales del Evento
-            EventoId eventoId = new EventoId(eventoRequestDto.getTitulo(), fechaInicio,fechaFin) ;
+            EventoId eventoId = new EventoId(eventoRequestDto.getTitulo(), fechaInicio, usuario.getEmail()) ;
 
             // Comprobamos si ya existe un evento con el mismo ID compuesto en la base de datos
             if (this.eventoRepository.existsById(eventoId))
@@ -95,6 +95,9 @@ public class EventoRestController
             Evento evento = new Evento() ;
             evento.setEventoId(eventoId) ;
             evento.setCategoria(categoriaOpt.get()) ;
+            evento.setUsuarioNombre(usuario.getNombre());
+            evento.setUsuarioApellidos(usuario.getApellidos());
+            evento.setFechaFin(fechaFin);
 
             this.eventoRepository.saveAndFlush(evento) ;
             log.info(Constants.ELEMENTO_AGREGADO) ;
@@ -106,7 +109,8 @@ public class EventoRestController
         }
    	 	catch (Exception exception)
         {
-    		EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR) ;
+   	 		log.error("error", exception);
+    		EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR, exception) ;
             return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage()) ;
     		
         }
@@ -117,23 +121,26 @@ public class EventoRestController
      * 
      * @param titulo Título del evento
      * @param fechaInicio Fecha de inicio en milisegundos
-     * @param fechaFin Fecha de fin en milisegundos
      * @return ResponseEntity con mensaje de éxito o error
      */
     @PreAuthorize("hasAnyRole('" + BaseConstants.ROLE_PROFESOR + "')")
     @DeleteMapping(value="/")
-    public ResponseEntity<?> eliminarEvento(@AuthenticationPrincipal DtoUsuarioExtended usuario,@RequestHeader String titulo,@RequestHeader Long fechaInicio,@RequestHeader Long fechaFin)
+    public ResponseEntity<?> eliminarEvento(@AuthenticationPrincipal DtoUsuarioExtended usuario, @RequestHeader String titulo, @RequestHeader Long fechaInicio)
     {
         try
         {
-        	validarEliminarEvento(titulo, fechaInicio, fechaFin);
-
+        	// Validamos el título
+        	if (titulo == null || titulo.isEmpty())
+            {
+                log.error(Constants.ERR_EVENTO_TITULO_NULO_VACIO);
+                throw new EventsServerException( Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_TITULO_NULO_VACIO) ;
+            }
+        	
         	// Hacemos la conversión de Long a Date para su registro.
         	Date fechaInicioDate = this.toDate(fechaInicio) ;
-            Date fechaFinDate = this.toDate(fechaFin) ;
             
             // Montamos el evento 
-            EventoId eventoId = new EventoId(titulo, fechaInicioDate, fechaFinDate) ;
+            EventoId eventoId = new EventoId(titulo, fechaInicioDate, usuario.getEmail()) ;
             
             //Buscar evento
             Optional<Evento> optionalEvento = eventoRepository.findById(eventoId);
@@ -149,7 +156,7 @@ public class EventoRestController
             // ADMIN puede borrar cualquier evento
             // PROFESOR solo los suyos
             if (!usuario.getRoles().contains(BaseConstants.ROLE_ADMINISTRADOR)
-                    && !usuario.getEmail().equals(evento.getUsuario().getEmail()))
+                    && !usuario.getEmail().equals(evento.getEventoId().getUsuarioEmail()))
             {
                 log.error(Constants.ERR_EVENTO_USUARIO_NO_PERMITIDO_DESC);
                 throw new EventsServerException( Constants.ERR_EVENTO_USUARIO_NO_PERMITIDO_CODE, Constants.ERR_EVENTO_USUARIO_NO_PERMITIDO_DESC) ;
@@ -198,25 +205,26 @@ public class EventoRestController
      * 
      * @param titulo Título del evento
      * @param fechaInicio Fecha de inicio en milisegundos
-     * @param fechaFin Fecha de fin en milisegundos
      * @return ResponseEntity con el evento encontrado
      */
     @PreAuthorize("hasAnyRole('"+BaseConstants.ROLE_PROFESOR+"')")
     @GetMapping("/filtro")
-    public ResponseEntity<?> obtenerEventoPorId(@AuthenticationPrincipal DtoUsuarioExtended usuario, @RequestHeader String titulo,@RequestHeader Long fechaInicio,@RequestHeader Long fechaFin)
+    public ResponseEntity<?> obtenerEventoPorId(@AuthenticationPrincipal DtoUsuarioExtended usuario, @RequestHeader String titulo,@RequestHeader Long fechaInicio)
     {
     	
         try
         {
-        	// Validaciones básicas
-            validarObtenerEvento(titulo, fechaInicio, fechaFin);
+            if (titulo == null || titulo.isEmpty())
+            {
+                log.error(Constants.ERR_EVENTO_TITULO_NULO_VACIO) ;
+                throw new EventsServerException( Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_TITULO_NULO_VACIO) ;
+            }
             
         	// Hacemos la conversión de Long a Date para su registro.
         	Date fechaInicioDate = this.toDate(fechaInicio) ;
-            Date fechaFinDate = this.toDate(fechaFin) ;
             
             // Montamos el evento
-            EventoId eventoId = new EventoId( titulo, fechaInicioDate, fechaFinDate) ;
+            EventoId eventoId = new EventoId( titulo, fechaInicioDate, usuario.getEmail()) ;
             
             //Buscamos el evento
             Optional<Evento> optionalEvento = eventoRepository.findById(eventoId) ;
@@ -234,7 +242,7 @@ public class EventoRestController
             // ADMIN y DIRECCIÓN → cualquier evento
             // PROFESOR → solo los suyos
             if ( usuario.getRoles().contains(BaseConstants.ROLE_PROFESOR) && !usuario.getRoles().contains(BaseConstants.ROLE_ADMINISTRADOR)
-                && !usuario.getRoles().contains(BaseConstants.ROLE_DIRECCION) && !usuario.getEmail().equals(evento.getUsuario().getEmail()))
+                && !usuario.getRoles().contains(BaseConstants.ROLE_DIRECCION) && !usuario.getEmail().equals(usuario.getEmail()))
             {
                 log.error(Constants.ERR_EVENTO_USUARIO_NO_PERMITIDO_DESC);
                 throw new EventsServerException( Constants.ERR_EVENTO_USUARIO_NO_PERMITIDO_CODE, Constants.ERR_EVENTO_USUARIO_NO_PERMITIDO_DESC) ;
@@ -244,7 +252,7 @@ public class EventoRestController
             EventoResponseDto eventoResponseDto = new EventoResponseDto() ;
             eventoResponseDto.setTitulo(evento.getEventoId().getTitulo()) ;
             eventoResponseDto.setFechaInicio(evento.getEventoId().getFechaInicio().getTime()) ;
-            eventoResponseDto.setFechaFin(evento.getEventoId().getFechaFin().getTime()) ;
+            eventoResponseDto.setFechaFin(evento.getFechaFin().getTime()) ;
             return ResponseEntity.ok(eventoResponseDto) ;
         } 
         catch (EventsServerException exception)  
@@ -342,85 +350,6 @@ public class EventoRestController
         {
             log.error(Constants.ERR_CATEGORIA_NO_EXISTE) ;
             throw new EventsServerException( Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_NO_EXISTE) ;
-        }
-    }
-    
-    /**
-     * Valida los datos necesarios para la eliminación de un evento.
-     * <p>
-     * Este método comprueba que el título del evento no sea nulo ni vacío y que las
-     * fechas de inicio y fin sean válidas. Las fechas se reciben como valores
-     * {@link Long} que representan milisegundos desde epoch y se convierten
-     * internamente a {@link Date} para poder realizar las validaciones necesarias.
-     * </p>
-     * <p>
-     * También valida que la fecha de fin no sea anterior a la fecha de inicio.
-     * </p>
-     * @param titulo      Título del evento a eliminar.
-     * @param fechaInicio Fecha de inicio del evento en milisegundos.
-     * @param fechaFin    Fecha de fin del evento en milisegundos.
-     *
-     * @throws EventsServerException si el título es nulo o vacío, si alguna de las fechas es nula o inválida, o si la fecha de fin
-     * es anterior a la fecha de inicio.
-     */
-    private void validarEliminarEvento(String titulo, Long fechaInicio, Long fechaFin) throws EventsServerException
-    {
-        if (titulo == null || titulo.isEmpty())
-        {
-            log.error(Constants.ERR_EVENTO_TITULO_NULO_VACIO);
-            throw new EventsServerException( Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_TITULO_NULO_VACIO) ;
-        }
-
-        Date fechaInicioDate = toDate(fechaInicio) ;
-        Date fechaFinDate = toDate(fechaFin) ;
-
-        if (fechaFinDate.before(fechaInicioDate))
-        {
-            log.error(Constants.ERR_EVENTO_FECHAS_INVALIDAS);
-            throw new EventsServerException( Constants.ERR_EVENTO_FECHAS_INVALIDAS_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS) ;
-        }
-    }
-    
-    /**
-     * Valida los datos necesarios para obtener un evento.
-     *
-     * <p>
-     * Este método comprueba que:
-     * <ul>
-     *   <li>El título del evento no sea nulo ni vacío.</li>
-     *   <li>Las fechas de inicio y fin no sean nulas ni inválidas.</li>
-     *   <li>La fecha de fin no sea anterior a la fecha de inicio.</li>
-     * </ul>
-     * </p>
-     *
-     * <p>
-     * Las fechas se reciben como {@link Long} (milisegundos desde epoch) y se
-     * convierten internamente a {@link Date} para realizar las validaciones
-     * correspondientes.
-     * </p>
-     *
-     * @param titulo      Título del evento.
-     * @param fechaInicio Fecha de inicio del evento en milisegundos.
-     * @param fechaFin    Fecha de fin del evento en milisegundos.
-     *
-     * @throws EventsServerException si alguno de los datos es nulo, vacío
-     *                               o si las fechas no son válidas.
-     */
-    private void validarObtenerEvento(String titulo, Long fechaInicio, Long fechaFin) throws EventsServerException
-    {
-        if (titulo == null || titulo.isEmpty())
-        {
-            log.error(Constants.ERR_EVENTO_TITULO_NULO_VACIO) ;
-            throw new EventsServerException( Constants.ERR_EVENTO_CODE, Constants.ERR_EVENTO_TITULO_NULO_VACIO) ;
-        }
-
-        Date inicio = toDate(fechaInicio) ;
-        Date fin    = toDate(fechaFin) ;
-
-        if (fin.before(inicio))
-        {
-            log.error(Constants.ERR_EVENTO_FECHAS_INVALIDAS) ;
-            throw new EventsServerException( Constants.ERR_EVENTO_FECHAS_INVALIDAS_CODE, Constants.ERR_EVENTO_FECHAS_INVALIDAS) ;
         }
     }
     

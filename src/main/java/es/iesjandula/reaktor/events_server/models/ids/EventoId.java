@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import java.util.Date;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -35,16 +36,14 @@ public class EventoId implements Serializable
      */
 	private String titulo;
 	
-    /**
-     * Fecha de inicio del evento.
-     * Forma parte de la clave primaria compuesta.
-     */
-    private Date fechaInicio;
-    
-    /**
-     * Fecha de fin del evento.
-     * Forma parte de la clave primaria compuesta.
-     */
-    private Date fechaFin;
-
+	/**
+	 * Fecha de inicio del evento.
+	 * Forma parte de la clave primaria compuesta.
+	 */
+	private Date fechaInicio;
+	
+	/**
+	 * Correo electrónico del usuario.
+	 */
+	private String usuarioEmail;
 }

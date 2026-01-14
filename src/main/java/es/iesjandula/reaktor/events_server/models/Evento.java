@@ -1,6 +1,9 @@
 package es.iesjandula.reaktor.events_server.models;
 
+import java.util.Date;
+
 import es.iesjandula.reaktor.events_server.models.ids.EventoId;
+import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -33,15 +36,24 @@ public class Evento
 	@EmbeddedId
     private EventoId eventoId;
 	
-	/**
-    * Usuario al que pertenece el evento.
-    * Relación muchos-a-uno con la entidad Usuario.
-    * La columna asociada en la base de datos es email y no puede ser nula.
-    */
-	@ManyToOne
-    @JoinColumn(name = "email", nullable = false)
-    private Usuario usuario;
+    /**
+     * Fecha de fin del evento.
+     * Forma parte de la clave primaria compuesta.
+     */
+	@Column
+    private Date fechaFin;
 
+    /**
+     * Nombre del usuario.
+     */
+	@Column(length = 100)
+    private String usuarioNombre;
+	
+    /**
+     * Apellidos del usuario.
+     */
+	@Column(length = 100)
+    private String usuarioApellidos;
     /**
      * Categoría a la que pertenece el evento.
      * Relación muchos-a-uno con la entidad Categoria.

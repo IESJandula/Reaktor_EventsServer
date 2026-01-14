@@ -28,8 +28,8 @@ public interface IEventoRepository extends JpaRepository<Evento, EventoId>
      * @return Lista de EventoResponseDto con los datos de cada evento.
      */
 	@Query("SELECT new es.iesjandula.reaktor.events_server.dto.EventoResponseDto(" + 
-			"e.id.titulo, e.id.fechaInicio, e.id.fechaFin, u.email, u.nombre)" + 
-			"FROM Evento e JOIN e.usuario u")
+			"e.eventoId.titulo, e.eventoId.fechaInicio, e.fechaFin, e.eventoId.usuarioEmail, e.usuarioNombre, e.usuarioApellidos)" + 
+			"FROM Evento e")
 	List<EventoResponseDto> buscarEventos();
 	
 	   /**
@@ -37,16 +37,14 @@ public interface IEventoRepository extends JpaRepository<Evento, EventoId>
      * identificado por su correo electrónico y los transforma
      * en objetos EventoResponseDto.
      * 
-     * <p>Se realiza un JOIN con la entidad Usuario
-     * para filtrar por el correo electrónico proporcionado.</p>
      * 
      * @param email Correo electrónico del usuario cuyos eventos se desean recuperar.
      * @return Lista de EventoResponseDto con los eventos del usuario.
      */
 	@Query("SELECT new es.iesjandula.reaktor.events_server.dto.EventoResponseDto(" + 
-			"e.id.titulo, e.id.fechaInicio, e.id.fechaFin, u.email, u.nombre)" + 
-			"FROM Evento e JOIN e.usuario u " + 
-			"WHERE u.email = :email" )
+			"e.eventoId.titulo, e.eventoId.fechaInicio, e.fechaFin, e.eventoId.usuarioEmail, e.usuarioNombre, e.usuarioApellidos)" + 
+			"FROM Evento e " + 
+			"WHERE e.eventoId.usuarioEmail = :email" )
 	List<EventoResponseDto> buscarEventosPorUsuario(@Param("email") String email);
 	
 }
