@@ -67,6 +67,11 @@ public class Constants
     /** Código y mensaje cuando el usuario no tiene el acceso permitido */
     public static final Integer ERR_EVENTO_USUARIO_NO_PERMITIDO_CODE = 14 ; 
     public static final String ERR_EVENTO_USUARIO_NO_PERMITIDO_DESC = "El usuario no tiene el acceso permitido" ;
+    
+    /** Código y mensaje cuando la fecha de inicio es inferior a la actual.*/
+    public static final Integer ERR_EVENTO_FECHA_INICIO_ANTERIOR_HOY_CODE = 21 ;
+    public static final String ERR_EVENTO_FECHA_INICIO_ANTERIOR_HOY_DESC = "La fecha de inicio no puede ser anterior a la fecha actual";
+    
     // --- Errores de Recordatorio ---
     /** Código de error genérico para Recordatorio */
     public static final Integer ERR_RECORDATORIO_CODE = 15 ;
@@ -87,9 +92,13 @@ public class Constants
     /** Código y mensaje cuando el recordatorio no existe */
     public static final Integer ERR_RECORDATORIO_NO_EXISTE_CODE = 19 ;
     public static final String ERR_RECORDATORIO_NO_EXISTE = "El recordatorio no existe en el sistema." ;
+    
+    
+
 	
  	// --- Error de Servidor---
     /** Código y mensaje para errores generales del servidor */
     public static final Integer ERR_SERVIDOR_CODE = 20 ;
     public static final String ERR_SERVIDOR = "Error de servidor." ;
+
 }

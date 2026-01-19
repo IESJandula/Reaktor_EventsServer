@@ -35,23 +35,37 @@ public class EventoResponseDto
     private Long fechaFin;
     
     /**
+    * Nombre de categoría a la que pertenece el evento.
+    */
+    private String nombre ;
+    
+    
+    /**
      * Correo electrónico del usuario asociado al evento.
      * Permite identificar al propietario o creador del evento.
      */
-    private String email;
+    private String usuarioEmail ; 
     
     /**
      * Nombre del usuario asociado al evento.
      * Permite identificar al propietario o creador del evento.
      */
-    private String nombre;
+    private String usuarioNombre;
     
-    public EventoResponseDto(String titulo, Date fechaInicio, Date fechaFin, String email, String nombre) {
+    /**
+     * Apellidos del usuario asociado al evento.
+     * Permite identificar al propietario o creador del evento.
+     */
+    private String usuarioApellidos;
+    
+    public EventoResponseDto(String titulo, Date fechaInicio, Date fechaFin, String nombre, String usuarioEmail, String usuarioNombre, String usuarioApellidos) {
         this.titulo = titulo;
         this.fechaInicio = fechaInicio != null ? fechaInicio.getTime() : null;
         this.fechaFin = fechaFin != null ? fechaFin.getTime() : null;
-        this.email = email;
         this.nombre = nombre;
+        this.usuarioNombre = usuarioNombre;
+        this.usuarioEmail = usuarioEmail;
+        this.usuarioApellidos= usuarioApellidos;
     }
     
     

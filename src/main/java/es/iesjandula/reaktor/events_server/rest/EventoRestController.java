@@ -1,5 +1,8 @@
 package es.iesjandula.reaktor.events_server.rest;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -191,13 +194,14 @@ public class EventoRestController
     {
     	try
     	{
-    	List<EventoResponseDto> eventos = this.eventoRepository.buscarEventos() ;
-        return ResponseEntity.ok(eventos) ;
+	    	List<EventoResponseDto> eventos = this.eventoRepository.buscarEventos() ;
+	        return ResponseEntity.ok(eventos) ;
     	}
 	 	catch (Exception exception)
     	{
-		EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR) ;
-        return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage()) ;	
+			EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR) ;
+			log.error("errorrrrrrrrrrrrrrrrrrrrrrrrr", exception) ;
+	        return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage()) ;	
     	}
     }
     /**
@@ -242,7 +246,7 @@ public class EventoRestController
             // ADMIN y DIRECCIÓN → cualquier evento
             // PROFESOR → solo los suyos
             if ( usuario.getRoles().contains(BaseConstants.ROLE_PROFESOR) && !usuario.getRoles().contains(BaseConstants.ROLE_ADMINISTRADOR)
-                && !usuario.getRoles().contains(BaseConstants.ROLE_DIRECCION) && !usuario.getEmail().equals(usuario.getEmail()))
+                && !usuario.getRoles().contains(BaseConstants.ROLE_DIRECCION) && !usuario.getEmail().equals(evento.getEventoId().getUsuarioEmail()))
             {
                 log.error(Constants.ERR_EVENTO_USUARIO_NO_PERMITIDO_DESC);
                 throw new EventsServerException( Constants.ERR_EVENTO_USUARIO_NO_PERMITIDO_CODE, Constants.ERR_EVENTO_USUARIO_NO_PERMITIDO_DESC) ;
@@ -351,7 +355,9 @@ public class EventoRestController
             log.error(Constants.ERR_CATEGORIA_NO_EXISTE) ;
             throw new EventsServerException( Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_NO_EXISTE) ;
         }
+       
     }
+    
     
     /**
      * Método privado que decide qué eventos devolver según el rol del usuario.

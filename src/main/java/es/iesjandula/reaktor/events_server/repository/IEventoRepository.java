@@ -28,7 +28,7 @@ public interface IEventoRepository extends JpaRepository<Evento, EventoId>
      * @return Lista de EventoResponseDto con los datos de cada evento.
      */
 	@Query("SELECT new es.iesjandula.reaktor.events_server.dto.EventoResponseDto(" + 
-			"e.eventoId.titulo, e.eventoId.fechaInicio, e.fechaFin, e.eventoId.usuarioEmail, e.usuarioNombre, e.usuarioApellidos)" + 
+			"e.eventoId.titulo, e.eventoId.fechaInicio, e.fechaFin, e.categoria.nombre, e.eventoId.usuarioEmail, e.usuarioNombre, e.usuarioApellidos)" + 
 			"FROM Evento e")
 	List<EventoResponseDto> buscarEventos();
 	
@@ -42,7 +42,7 @@ public interface IEventoRepository extends JpaRepository<Evento, EventoId>
      * @return Lista de EventoResponseDto con los eventos del usuario.
      */
 	@Query("SELECT new es.iesjandula.reaktor.events_server.dto.EventoResponseDto(" + 
-			"e.eventoId.titulo, e.eventoId.fechaInicio, e.fechaFin, e.eventoId.usuarioEmail, e.usuarioNombre, e.usuarioApellidos)" + 
+			"e.eventoId.titulo, e.eventoId.fechaInicio, e.fechaFin, e.categoria.nombre, e.eventoId.usuarioEmail, e.usuarioNombre, e.usuarioApellidos)" + 
 			"FROM Evento e " + 
 			"WHERE e.eventoId.usuarioEmail = :email" )
 	List<EventoResponseDto> buscarEventosPorUsuario(@Param("email") String email);
