@@ -19,6 +19,11 @@
             <artifactId>BaseServer</artifactId>
             <version>1.0.0</version>
         </dependency>
+		<dependency>
+			<groupId>es.iesjandula.reaktor</groupId>
+			<artifactId>BaseClient</artifactId>
+			<version>1.0.0</version>
+		</dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -31,32 +36,74 @@
     </dependencies>
 
 	<build>
+		<!-- Util para la asignación de secretos desde Github -->
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering> <!-- Activar filtrado de recursos -->
+				<excludes>
+					<exclude>**/*.p12</exclude> <!-- Excluir archivos .p12
+					(keystore) del filtrado -->
+					<exclude>**/*.pem</exclude> <!-- Excluir archivos .pem
+					(keystore) del filtrado -->
+					<exclude>**/*.csv</exclude> <!-- Excluir archivos .csv del
+					filtrado -->
+				</excludes>
+			</resource>
+			<!-- Añadir otra sección de recursos para incluir archivos binarios
+			sin filtrado -->
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering> <!-- No aplicar filtrado a archivos
+				binarios -->
+				<includes>
+					<include>**/*.p12</include>
+					<include>**/*.pem</include>
+					<include>**/*.csv</include>
+				</includes>
+			</resource>
+			<!-- FIN - Util para la asignación de secretos desde Github -->
+		</resources>
 		<plugins>
+			<!-- Util para la asignación de secretos desde Github -->
 			<plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                        <configuration>
-                            <classifier>jar-with-dependencies</classifier>
-                            <mainClass>
-                                es.iesjandula.reaktor.events_server.ReaktorEventsServerApplication</mainClass>
-                        </configuration>
-                    </execution>
-                </executions>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<configuration>
+					<encoding>UTF-8</encoding>
+					<useDefaultDelimiters>true</useDefaultDelimiters> <!--
+					Asegura el uso de delimitadores por defecto (${...}) -->
+					<filters>
+						<filter>
+							src/main/resources/application-VPS-filter.properties</filter>
+					</filters>
+				</configuration>
+			</plugin>
+			<!-- FIN - Util para la asignación de secretos desde Github -->
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+						<configuration>
+							<classifier>jar-with-dependencies</classifier>
+							<mainClass>
+								es.iesjandula.reaktor.events_server.ReaktorEventsServerApplication</mainClass>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
-
 </project>
