@@ -1,8 +1,5 @@
 package es.iesjandula.reaktor.events_server.rest;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -69,8 +66,7 @@ public class EventoRestController
         {
         	// Validamos los datos de entrada
             validarCrearEvento( eventoRequestDto.getTitulo(), eventoRequestDto.getFechaInicio(), eventoRequestDto.getFechaFin(), eventoRequestDto.getNombre()) ;
-
-            
+        
             // Hacemos la conversión de Long a Date para su registro.
         	Date fechaInicio = this.toDate(eventoRequestDto.getFechaInicio()) ;
             Date fechaFin = this.toDate(eventoRequestDto.getFechaFin()) ;

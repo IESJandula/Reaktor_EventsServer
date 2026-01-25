@@ -58,6 +58,7 @@ public class CategoriaRestController
 				log.error(Constants.ERR_CATEGORIA_NOMBRE_NULO_VACIO);
 				throw new EventsServerException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_NOMBRE_NULO_VACIO);
 			}
+			
 			//Comprueba si ya existe una categoría con el mismo nombre en la base de datos
 			if (this.categoriaRepository.existsById(categoriaRequestDto.getNombre()))
 			{
@@ -101,6 +102,13 @@ public class CategoriaRestController
 	{
 		try
 		{
+			//Comprueba que el nombre de la categoría no sea nulo ni esté vacío antes de continuar
+			if (nombre == null || nombre.isEmpty())
+			{
+				log.error(Constants.ERR_CATEGORIA_NOMBRE_NULO_VACIO);
+				throw new EventsServerException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_NOMBRE_NULO_VACIO);
+			}
+
 			//Comprueba si la categoría a eliminar NO existe en la base de datos
 			if (!this.categoriaRepository.existsById(nombre))
 			{
