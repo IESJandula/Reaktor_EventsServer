@@ -81,6 +81,7 @@ public class CategoriaRestController
    	 	catch (Exception exception)
         {
     		EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
+    		log.error("Error genérico al crear categoría", exception);
             return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage());
     		
         }
@@ -127,6 +128,7 @@ public class CategoriaRestController
    	 	catch (Exception exception)
         {
     		EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
+    		log.error("Error genérico al eliminar categoria", exception);
             return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage());
     		
         }
@@ -152,6 +154,7 @@ public class CategoriaRestController
    	 	catch (Exception exception)
         {
     		EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR);
+    		log.error("Error genérico al obtener categorías", exception);
             return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage());	
         }
 	} 

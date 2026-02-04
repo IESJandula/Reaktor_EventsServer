@@ -108,8 +108,9 @@ public class EventoRestController
         }
    	 	catch (Exception exception)
         {
-   	 		log.error("error", exception);
+   	 		
     		EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR, exception) ;
+    		log.error("Error genérico al crear evento", exception);
             return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage()) ;
     		
         }
@@ -174,6 +175,7 @@ public class EventoRestController
    	 	catch (Exception exception)
         {
     		EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR) ;
+    		log.error("Error genérico al eliminar evento", exception);
             return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage()) ;
     		
         }
@@ -196,7 +198,7 @@ public class EventoRestController
 	 	catch (Exception exception)
     	{
 			EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR) ;
-			log.error("errorrrrrrrrrrrrrrrrrrrrrrrrr", exception) ;
+			log.error("Error genérico al obtener el/los evento/s", exception);
 	        return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage()) ;	
     	}
     }
@@ -262,7 +264,8 @@ public class EventoRestController
    	 	catch (Exception exception)
         {
     		EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR) ;
-            return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage()) ;
+    		log.error("Error genérico obtener el/los evento/s", exception) ;
+    		return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage()) ;
         }
     }
     
@@ -290,6 +293,7 @@ public class EventoRestController
     	 catch (Exception exception)
         {
     		EventsServerException calendarioException= new EventsServerException(Constants.ERR_SERVIDOR_CODE,Constants.ERR_SERVIDOR) ;
+    		log.error("Error genérico obtener el/los evento/s por usuario", exception);
             return ResponseEntity.status(500).body(calendarioException.getBodyExceptionMessage()) ;
     		
         }
