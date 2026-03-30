@@ -1,5 +1,14 @@
 spring:
-    jpa.hibernate.ddl-auto: create
+  application:
+    name: reaktor-eventsserver
+  jpa:
+    hibernate:
+      ddl-auto: update
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
     datasource:
         url: jdbc:mysql://localhost:3306/EventsServer?createDatabaseIfNotExist=true
         username: root
@@ -29,3 +38,6 @@ reaktor:
   clientId: events
   http_connection_timeout: 30000
   reiniciarParametros: true
+  audit:
+    exchange: audit.exchange
+    routing-key: audit.key
