@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import es.iesjandula.reaktor.base.security.models.DtoUsuarioExtended;
 import es.iesjandula.reaktor.base.utils.BaseConstants;
-import es.iesjandula.reaktor.events_server.dto.EventoHuelgaRequestDto;
 import es.iesjandula.reaktor.events_server.dto.EventoRequestDto;
 import es.iesjandula.reaktor.events_server.dto.EventoResponseDto;
 import es.iesjandula.reaktor.events_server.models.Categoria;
@@ -299,49 +298,6 @@ public class EventoRestController
     		
         }
     
-    }
-    /**
-     * Endpoint para obtener las huelgas.
-     * 
-     * @return ResponseEntity con la lista de huelgsa
-     */
-    @PreAuthorize("hasAnyRole('" + BaseConstants.ROLE_PROFESOR + "')")
-    @PostMapping("/huelga")
-    public ResponseEntity<?> crearEventoHuelga(@AuthenticationPrincipal DtoUsuarioExtended usuario, @RequestBody EventoHuelgaRequestDto eventoHuelgaRequestDto)
-    {
-        try
-        {
-            Date fechaInicio = new Date(eventoHuelgaRequestDto.getFechaInicio());
-            Date fechaFin = new Date(eventoHuelgaRequestDto.getFechaFin());
-            EventoId eventoId = new EventoId(eventoHuelgaRequestDto.getTitulo(), fechaInicio, usuario.getEmail());
-
-            Evento evento = new Evento();
-            evento.setEventoId(eventoId);
-            evento.setFechaFin(fechaFin);
-            evento.setUsuarioNombre(usuario.getNombre());
-            evento.setUsuarioApellidos(usuario.getApellidos());
-
-            Categoria categoria = categoriaRepository.findById("Huelga").orElseThrow(() ->
-                {
-                    log.error(Constants.ERR_CATEGORIA_NO_EXISTE);
-                    return new EventsServerException(Constants.ERR_CATEGORIA_CODE, Constants.ERR_CATEGORIA_NO_EXISTE);
-                });
-
-            evento.setCategoria(categoria);
-            eventoRepository.saveAndFlush(evento);
-            log.info(Constants.ELEMENTO_AGREGADO);
-            return ResponseEntity.ok().build();
-        }
-        catch (EventsServerException exception)
-        {
-            return ResponseEntity.badRequest().body(exception.getBodyExceptionMessage());
-        }
-        catch (Exception exception)
-        {
-            log.error(Constants.ERR_SERVIDOR, exception);
-            EventsServerException eventsServerException = new EventsServerException(Constants.ERR_SERVIDOR_CODE, Constants.ERR_SERVIDOR, exception);
-            return ResponseEntity.status(500).body(eventsServerException.getBodyExceptionMessage());
-        }
     }
     
     /**
